@@ -154,6 +154,7 @@
             Controls.Add(btConsultar);
             Controls.Add(dgvPlanes);
             Name = "FormPlanes";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "CRUD Personas";
             Load += FormPersonas_Load;
             ((System.ComponentModel.ISupportInitialize)dgvPlanes).EndInit();

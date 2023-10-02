@@ -7,7 +7,7 @@ namespace CrudAcademia.Context
     {
         public AcademiaContext(DbContextOptions<AcademiaContext> options) : base (options) 
         { 
-
+            this.Database.EnsureCreated();
         }
         public DbSet<Persona> Persona{ get; set; }
         public DbSet<Plan>Plan { get; set; }

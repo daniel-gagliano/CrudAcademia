@@ -153,6 +153,7 @@
             Controls.Add(btConsultar);
             Controls.Add(dgvPersonas);
             Name = "FormPersonas";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "CRUD Personas";
             Load += FormPersonas_Load;
             ((System.ComponentModel.ISupportInitialize)dgvPersonas).EndInit();

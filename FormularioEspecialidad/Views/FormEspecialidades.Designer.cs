@@ -155,6 +155,7 @@
             Controls.Add(btConsultar);
             Controls.Add(dgvEspecialidades);
             Name = "FormEspecialidades";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "CRUD Personas";
             Load += FormPersonas_Load;
             ((System.ComponentModel.ISupportInitialize)dgvEspecialidades).EndInit();

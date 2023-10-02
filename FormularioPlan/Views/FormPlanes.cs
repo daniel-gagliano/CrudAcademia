@@ -125,7 +125,7 @@ namespace FormularioPersona
                     else
                     {
                         // La respuesta no es un JSON válido, muestra un MessageBox.
-                        MessageBox.Show("Persona no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Plan no encontrado", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
 
 
