@@ -84,6 +84,7 @@
             Controls.Add(btnPersonas);
             Controls.Add(label1);
             Name = "Inicio";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "ACADEMIA";
             ResumeLayout(false);
             PerformLayout();
