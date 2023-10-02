@@ -1,1 +1,6 @@
-# CrudAcademia
+# TP Academia - Grupo 6
+
+-CRUD PERSONAS
+-CRUD PLANES
+-CRUD ESPECIALIDADES
+
