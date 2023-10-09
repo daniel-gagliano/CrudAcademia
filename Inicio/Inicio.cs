@@ -1,6 +1,7 @@
 using FormularioPersona;
 using FormularioPlan;
 using FormularioEspecialidad;
+using Inicio.FormularioEspecialidad;
 
 namespace Inicio
 {
@@ -25,7 +26,7 @@ namespace Inicio
 
         private void button2_Click(object sender, EventArgs e)
         {
-            FormEspecialidades especialidadesCrud = new FormEspecialidades();
+            FormEspecialidad especialidadesCrud = new FormEspecialidad();
             especialidadesCrud.ShowDialog();
         }
     }

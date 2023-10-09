@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BibliotecaClases;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,10 +8,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BibliotecaClases;
 
 
-namespace FormularioPersona.Views
+
+namespace Inicio.FormularioEspecialidad
 {
     public partial class EditarForm : Form
     {
@@ -21,22 +22,15 @@ namespace FormularioPersona.Views
             this.especialidadEditar = especialidad;
             txtID.Text = (especialidad.idEspecialidad).ToString();
             txtDescripcion.Text = especialidad.descEspecialidad;
-
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void EditarForm_Load(object sender, EventArgs e)
         {
 
         }
-
         private void button2_Click(object sender, EventArgs e)
         {
             this.Close();
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
         }
         private bool ValidarCampos()
         {
@@ -48,12 +42,6 @@ namespace FormularioPersona.Views
 
             return true; // Todos los campos son válidos.
         }
-
-        private void EditarForm_Load(object sender, EventArgs e)
-        {
-
-        }
-
         private void button1_Click_2(object sender, EventArgs e)
         {
             if (ValidarCampos())
@@ -70,6 +58,26 @@ namespace FormularioPersona.Views
         }
 
         private void button2_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (ValidarCampos())
+            {
+
+                especialidadEditar.descEspecialidad = txtDescripcion.Text;
+                this.Close();
+
+            }
+            else
+            {
+                MessageBox.Show("Completa todos los campos antes de continuar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button2_Click_2(object sender, EventArgs e)
         {
             this.Close();
         }

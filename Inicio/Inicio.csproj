@@ -13,7 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FormularioEspecialidad\FormularioEspecialidad.csproj" />
     <ProjectReference Include="..\FormularioPersona\FormularioPersona.csproj" />
     <ProjectReference Include="..\FormularioPlan\FormularioPlan.csproj" />
   </ItemGroup>

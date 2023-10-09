@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BibliotecaClases;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -7,34 +8,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using BibliotecaClases;
 
-
-namespace FormularioPersona.Views
+namespace Inicio.FormularioEspecialidad
 {
-    public partial class EditarForm : Form
+    public partial class AgregarForm : Form
     {
-        private Especialidad especialidadEditar;
-        public EditarForm(Especialidad especialidad)
+        public Especialidad NuevaEspecialidad { get; private set; }
+        public AgregarForm(int ultimoId)
         {
             InitializeComponent();
-            this.especialidadEditar = especialidad;
-            txtID.Text = (especialidad.idEspecialidad).ToString();
-            txtDescripcion.Text = especialidad.descEspecialidad;
-
+            txtID.Text = (ultimoId).ToString();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void AgregarForm_Load(object sender, EventArgs e)
         {
 
         }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
         private void button1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+        private void button2_Click(object sender, EventArgs e)
         {
 
         }
@@ -45,28 +39,33 @@ namespace FormularioPersona.Views
                 return false; // Al menos uno de los campos está vacío o en blanco.
             }
 
-
             return true; // Todos los campos son válidos.
         }
 
-        private void EditarForm_Load(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-
-        }
-
-        private void button1_Click_2(object sender, EventArgs e)
-        {
+            //Recopilar los datos
             if (ValidarCampos())
             {
 
-                especialidadEditar.descEspecialidad = txtDescripcion.Text;
-                this.Close();
+                String descripcion = txtDescripcion.Text;
 
+                //Crear nueva persona
+                Especialidad nuevaEspecialidad = new Especialidad()
+                {
+
+                    descEspecialidad = descripcion,
+
+                };
+                NuevaEspecialidad = nuevaEspecialidad;
+                this.Close();
             }
             else
             {
                 MessageBox.Show("Completa todos los campos antes de continuar", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+
         }
 
         private void button2_Click_1(object sender, EventArgs e)

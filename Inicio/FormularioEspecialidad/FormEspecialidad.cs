@@ -1,17 +1,19 @@
-using System;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Net.Http;
-using Newtonsoft.Json;
-using System.Net.Http.Headers;
-using System.Net.Http.Json;
+Ôªøusing BibliotecaClases;
 using FormularioPersona.Views;
-using BibliotecaClases;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Net.Http.Json;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace FormularioPersona
+namespace Inicio.FormularioEspecialidad
 {
-    public partial class FormEspecialidades : Form
+    public partial class FormEspecialidad : Form
     {
         private List<Especialidad> especialidadList = new List<Especialidad>();
         private Especialidad nuevaEspecialidad;
@@ -20,18 +22,16 @@ namespace FormularioPersona
         {
             BaseAddress = new Uri("https://localhost:7077")
         };
-
-        public FormEspecialidades()
+        public FormEspecialidad()
         {
             InitializeComponent();
             dgvEspecialidades.CurrentCell = null;
         }
 
-        private void Personas_Load(object sender, EventArgs e)
+        private void FormEspecialidad_Load(object sender, EventArgs e)
         {
 
         }
-
         protected int ObtenerUltimoId()
         {
             if (especialidadList.Any())
@@ -42,27 +42,14 @@ namespace FormularioPersona
             }
             else
             {
-                // Si la lista est· vacÌa, devuelve un valor inicial
+                // Si la lista est√° vac√≠a, devuelve un valor inicial
                 return 0;
             }
         }
-
-
-
         protected async Task List()
         {
             especialidadList = (await _httpClient.GetFromJsonAsync<IEnumerable<Especialidad>>("api/Especialidad")).ToList();
             this.dgvEspecialidades.DataSource = especialidadList;
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private async void FormPersonas_Load(object sender, EventArgs e)
-        {
-            await this.List();
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -81,8 +68,8 @@ namespace FormularioPersona
                 // Acceder al valor del ID de la fila seleccionada:
                 String id = selectedRow.Cells["idEspecialidad"].Value.ToString();
 
-                // Mostrar un MessageBox de confirmaciÛn
-                DialogResult result = MessageBox.Show("Seguro que quieres eliminar esta especialidad?", "ConfirmaciÛn", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                // Mostrar un MessageBox de confirmaci√≥n
+                DialogResult result = MessageBox.Show("Seguro que quieres eliminar esta especialidad?", "Confirmaci√≥n", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
                 {
@@ -110,7 +97,7 @@ namespace FormularioPersona
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Verifica si la respuesta es una cadena JSON v·lida.
+                    // Verifica si la respuesta es una cadena JSON v√°lida.
                     if (!string.IsNullOrEmpty(jsonResponse) && jsonResponse.StartsWith("{"))
                     {
                         var especialidad = await response.Content.ReadFromJsonAsync<Especialidad>();
@@ -124,7 +111,7 @@ namespace FormularioPersona
                     }
                     else
                     {
-                        // La respuesta no es un JSON v·lido, muestra un MessageBox.
+                        // La respuesta no es un JSON v√°lido, muestra un MessageBox.
                         MessageBox.Show("Especialidad no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
 
@@ -132,7 +119,7 @@ namespace FormularioPersona
                 }
                 else
                 {
-                    // Maneja casos en los que la solicitud no fue exitosa (cÛdigo de estado HTTP diferente de 200).
+                    // Maneja casos en los que la solicitud no fue exitosa (c√≥digo de estado HTTP diferente de 200).
                     MessageBox.Show("Ingresa un valor valido", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
@@ -150,7 +137,6 @@ namespace FormularioPersona
 
         private async void btEditar_Click(object sender, EventArgs e)
         {
-
             nuevaEspecialidad = dgvEspecialidades.SelectedRows[0].DataBoundItem as Especialidad; ;
             EditarForm editar = new EditarForm(nuevaEspecialidad);
             editar.ShowDialog();
