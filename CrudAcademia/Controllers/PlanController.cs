@@ -1,5 +1,5 @@
-﻿using CrudAcademia.Context;
-using CrudAcademia.Models;
+﻿using BibliotecaClases;
+using CrudAcademia.Context;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

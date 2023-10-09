@@ -8,6 +8,7 @@ using System.Net.Http.Headers;
 using FormularioEspecialidad.Models;
 using System.Net.Http.Json;
 using FormularioPersona.Views;
+using BibliotecaClases;
 
 namespace FormularioPersona
 {

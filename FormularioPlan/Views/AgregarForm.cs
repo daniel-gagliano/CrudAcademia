@@ -1,4 +1,5 @@
-﻿using FormularioPlan.Models;
+﻿using BibliotecaClases;
+using FormularioPlan.Models;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
@@ -56,7 +57,7 @@ namespace FormularioPersona.Views
                 //Crear nueva persona
                 Plan nuevoPlan = new Plan()
                 {
-                    idPlan = ultimoID,
+                    
                     descPlan = descripcion,
                     idEspecialidad = IdEspecialidad,
                 };

@@ -1,4 +1,4 @@
-﻿using CrudAcademia.Models;
+﻿using BibliotecaClases;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrudAcademia.Context

@@ -1,4 +1,5 @@
-﻿using FormularioEspecialidad.Models;
+﻿using BibliotecaClases;
+using FormularioEspecialidad.Models;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace FormularioPersona.Views
                     //Crear nueva persona
                     Especialidad nuevaEspecialidad = new Especialidad()
                     {
-                        idEspecialidad = Convert.ToInt32(txtID.Text),
+                        
                          descEspecialidad = descripcion,
 
                     };

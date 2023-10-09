@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BibliotecaClases\BibliotecaClases.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Views\AgregarForm.cs">
       <SubType>Form</SubType>
     </Compile>

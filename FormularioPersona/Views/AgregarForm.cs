@@ -1,4 +1,5 @@
-﻿using FormularioPersona.Models;
+﻿using BibliotecaClases;
+using FormularioPersona.Models;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
@@ -65,7 +66,7 @@ namespace FormularioPersona.Views
                     //Crear nueva persona
                     Persona nuevaPersona = new Persona()
                     {
-                        Id = ultimoID,
+                        
                         apellido = apellido,
                         nombre = nombre,
                         direccion = direccion,
