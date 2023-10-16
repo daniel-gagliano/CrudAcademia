@@ -1,7 +1,6 @@
-using FormularioPersona;
-using FormularioPlan;
-using FormularioEspecialidad;
 using Inicio.FormularioEspecialidad;
+using Inicio.FormularioPlan;
+using Inicio.FormularioPersona;
 
 namespace Inicio
 {
@@ -14,13 +13,13 @@ namespace Inicio
 
         private void btnPersonas_Click(object sender, EventArgs e)
         {
-            FormPersonas personasCrud = new FormPersonas();
+            FormPersona personasCrud = new FormPersona();
             personasCrud.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            FormPlanes planesCrud = new FormPlanes();
+            FormPlan planesCrud = new FormPlan();
             planesCrud.ShowDialog();
         }
 
