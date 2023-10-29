@@ -25,6 +25,7 @@ namespace Inicio.FormularioEspecialidad
         {
             InitializeComponent();
             dgvEspecialidades.CurrentCell = null;
+            this.List();
         }
 
         private void FormEspecialidad_Load(object sender, EventArgs e)

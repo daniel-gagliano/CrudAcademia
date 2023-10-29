@@ -1,4 +1,9 @@
 ﻿using BibliotecaClases;
+using CrudAcademia.Context;
+using Inicio.Servicios;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,18 +18,55 @@ namespace Inicio.FormularioPersona
 {
     public partial class AgregarForm : Form
     {
+        private PersonaServicios personaServicios;
+        private UsuarioServicios usuarioServicios;
         public Persona NuevaPersona { get; private set; }
-        public AgregarForm(int ultimoId)
+        public Usuario NuevoUsuario { get; private set; }
+
+        private AcademiaContext context;
+        private DbContextOptionsBuilder<AcademiaContext> optionsBuilder;
+
+
+        public AgregarForm(int ultimoId, PersonaServicios personaServicios, UsuarioServicios usuarioServicios)
         {
             InitializeComponent();
+            var configuration = new ConfigurationBuilder()
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+             .AddJsonFile("appsettings.json")
+              .Build();
+            var connectionString = configuration.GetConnectionString("dbAcademia");
+
+            optionsBuilder = new DbContextOptionsBuilder<AcademiaContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+
             txtID.Text = (ultimoId).ToString();
+            context = new AcademiaContext(optionsBuilder.Options);
+            CargarPlanes();
+
+            this.personaServicios = personaServicios;
+            this.usuarioServicios = usuarioServicios;
         }
+        private void CargarPlanes()
+        {
+
+            // Obtiene las especialidades de la base de datos
+            var planes = context.Plan.ToList();
+
+            // Enlaza la lista de especialidades al ComboBox
+            txtIdPlan.DataSource = planes;
+            txtIdPlan.DisplayMember = "descPlan"; // Establece la propiedad que se mostrará en el ComboBox
+            txtIdPlan.ValueMember = "idPLan"; // Establece la propiedad que se utilizará como valor seleccionado
+        }
+
         private bool ValidarCampos()
         {
             if (string.IsNullOrWhiteSpace(txtApellido.Text) || string.IsNullOrWhiteSpace(txtDireccion.Text) ||
                 string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtIdPlan.Text) || string.IsNullOrWhiteSpace(txtLegajo.Text) ||
-                string.IsNullOrWhiteSpace(txtTelefono.Text) || string.IsNullOrWhiteSpace(txtTipoPersona.Text))
+                string.IsNullOrWhiteSpace(txtTelefono.Text) || string.IsNullOrWhiteSpace(txtTipoPersona.Text)||
+                string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtContraseña.Text))
+
+
             {
                 return false; // Al menos uno de los campos está vacío o en blanco.
             }
@@ -38,23 +80,28 @@ namespace Inicio.FormularioPersona
             this.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             //Recopilar los datos
             if (ValidarCampos())
             {
                 if (int.TryParse(txtLegajo.Text, out int legajoOk))
                 {
+                    //Persona
                     int ultimoID = Convert.ToInt32(txtID.Text);
                     String apellido = txtApellido.Text;
                     String direccion = txtDireccion.Text;
                     String nombre = txtNombre.Text;
                     String email = txtEmail.Text;
                     DateTime fechaNacimiento = DateTime.Now;
-                    int IdPlan = Convert.ToInt32(txtIdPlan.Text);
+                    int IdPlan = (int)txtIdPlan.SelectedValue;
                     int legajo = Convert.ToInt32(txtLegajo.Text);
                     String telefono = txtTelefono.Text;
                     String tipoPersona = txtTipoPersona.Text;
+                    //Usuario
+                    String usuario = txtUsuario.Text;
+                    String contraseña = txtContraseña.Text;
+
 
                     //Crear nueva persona
                     Persona nuevaPersona = new Persona()
@@ -70,7 +117,15 @@ namespace Inicio.FormularioPersona
                         telefono = telefono,
                         tipoPersona = tipoPersona,
                     };
-                    NuevaPersona = nuevaPersona;
+                    await personaServicios.AgregarPersonaAsync(nuevaPersona);
+                    //Crear nuevo Usuario
+                    Usuario nuevoUsuario = new Usuario()
+                    {
+                        userName = usuario,
+                        password = contraseña,
+                        idPersona = ultimoID,
+                    };
+                    await usuarioServicios.AgregarUsuarioAsync(nuevoUsuario);
                     this.Close();
                 }
                 else

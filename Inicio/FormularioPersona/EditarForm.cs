@@ -1,4 +1,5 @@
 ﻿using BibliotecaClases;
+using Inicio.Servicios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,10 +14,12 @@ namespace Inicio.FormularioPersona
 {
     public partial class EditarForm : Form
     {
+        private PersonaServicios PersonaServicios;
         private Persona personaAEditar;
-        public EditarForm(Persona persona)
+        public EditarForm(Persona persona, PersonaServicios personaServicios)
         {
             InitializeComponent();
+            this.PersonaServicios = personaServicios;
             this.personaAEditar = persona;
             txtApellido.Text = persona.apellido;
             txtNombre.Text = persona.nombre;
@@ -46,7 +49,7 @@ namespace Inicio.FormularioPersona
             this.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             if (ValidarCampos())
             {
@@ -60,6 +63,8 @@ namespace Inicio.FormularioPersona
                     personaAEditar.direccion = txtDireccion.Text;
                     personaAEditar.IdPlan = Convert.ToInt32(txtIdPlan.Text);
                     personaAEditar.legajo = Convert.ToInt32(txtLegajo.Text);
+
+                    await PersonaServicios.EditarPersonaAsync(personaAEditar.Id, personaAEditar);
                     this.Close();
                 }
                 else

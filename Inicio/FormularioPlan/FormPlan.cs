@@ -23,6 +23,7 @@ namespace Inicio.FormularioPlan
         public FormPlan()
         {
             InitializeComponent();
+            this.List();
         }
 
         protected async Task List()

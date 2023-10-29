@@ -26,6 +26,7 @@ namespace Inicio.FormularioPersona
         private void btnAceptar_Click(object sender, EventArgs e)
         {
             id = this.tbId.Text;
+            this.DialogResult = DialogResult.OK;
             this.Close();
         }
     }

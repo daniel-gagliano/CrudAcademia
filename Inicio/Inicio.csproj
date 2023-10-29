@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BibliotecaClases\BibliotecaClases.csproj" />
+    <ProjectReference Include="..\CrudAcademia\CrudAcademia.csproj" />
   </ItemGroup>
 
 </Project>

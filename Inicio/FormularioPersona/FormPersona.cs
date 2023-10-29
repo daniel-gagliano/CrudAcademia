@@ -1,4 +1,8 @@
 ﻿using BibliotecaClases;
+using CrudAcademia.Context;
+using Inicio.Servicios;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,8 +18,13 @@ namespace Inicio.FormularioPersona
 {
     public partial class FormPersona : Form
     {
+        private DbContextOptionsBuilder<AcademiaContext> optionsBuilder;
+        private AcademiaContext dbContext;
+        private PersonaServicios personaServicios;
+        private UsuarioServicios usuarioServicios;
         private List<Persona> personaList = new List<Persona>();
         private Persona nuevaPersona;
+        private Usuario nuevoUsuario;
 
         private readonly HttpClient _httpClient = new()
         {
@@ -25,7 +34,22 @@ namespace Inicio.FormularioPersona
         public FormPersona()
         {
             InitializeComponent();
-            dgvPersonas.CurrentCell = null;
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+                .AddJsonFile("appsettings.json")
+                .Build();
+            var connectionString = configuration.GetConnectionString("dbAcademia");
+
+            optionsBuilder = new DbContextOptionsBuilder<AcademiaContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+            dbContext = new AcademiaContext(optionsBuilder.Options);
+
+            personaServicios = new PersonaServicios(dbContext);
+            usuarioServicios = new UsuarioServicios(dbContext);
+
+
+            this.List();
+            
         }
         protected int ObtenerUltimoId()
         {
@@ -41,10 +65,10 @@ namespace Inicio.FormularioPersona
                 return 0;
             }
         }
-        protected async Task List()
+        private async void List()
         {
-            personaList = (await _httpClient.GetFromJsonAsync<IEnumerable<Persona>>("api/Persona")).ToList();
-            this.dgvPersonas.DataSource = personaList;
+            var personas = await personaServicios.ObtenerTodasLasPersonasAsync();
+            dgvPersonas.DataSource = personas;
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -52,48 +76,34 @@ namespace Inicio.FormularioPersona
             this.Close();
         }
 
-        private async void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
-            await this.List();
+             this.List();
         }
 
         private async void btConsultar_Click(object sender, EventArgs e)
         {
             BusquedaForm busqueda = new BusquedaForm();
             busqueda.ShowDialog();
-            String idRecibido = busqueda.id;
-
-            if (!string.IsNullOrEmpty(idRecibido))
+            if (busqueda.DialogResult == DialogResult.OK)
             {
-                var response = await _httpClient.GetAsync($"api/Persona/{idRecibido}");
+                if (int.TryParse(busqueda.id, out int idRecibido) && idRecibido > 0)
+                {                
+                    var persona = await personaServicios.ObtenerPersonaPorIdAsync(idRecibido);
 
-                if (response.IsSuccessStatusCode)
-                {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Verifica si la respuesta es una cadena JSON válida.
-                    if (!string.IsNullOrEmpty(jsonResponse) && jsonResponse.StartsWith("{"))
+                    if (persona != null)
                     {
-                        var persona = await response.Content.ReadFromJsonAsync<Persona>();
-                        if (persona != null)
-                        {
-                            List<Persona> personaList = new List<Persona> { persona };
-                            dgvPersonas.DataSource = personaList;
-
-                        }
-
+                        List<Persona> personaList = new List<Persona> { persona };
+                        dgvPersonas.DataSource = personaList;
                     }
                     else
                     {
-                        // La respuesta no es un JSON válido, muestra un MessageBox.
-                        MessageBox.Show("Persona no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        MessageBox.Show("Persona no encontrada", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-
-
                 }
                 else
                 {
-                    // Maneja casos en los que la solicitud no fue exitosa (código de estado HTTP diferente de 200).
-                    MessageBox.Show("Ingresa un valor valido", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Ingresa un valor válido", "Búsqueda", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -101,47 +111,36 @@ namespace Inicio.FormularioPersona
         private async void btAgregar_Click(object sender, EventArgs e)
         {
             int ultimoId = ObtenerUltimoId();
-            AgregarForm agregar = new AgregarForm(ultimoId + 1);
+            AgregarForm agregar = new AgregarForm(ultimoId + 1,personaServicios,usuarioServicios);
             agregar.ShowDialog();
             nuevaPersona = agregar.NuevaPersona;
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Persona", nuevaPersona);
-            await this.List();
+            nuevoUsuario = agregar.NuevoUsuario;
+            this.List();
         }
 
         private async void btEditar_Click(object sender, EventArgs e)
         {
             nuevaPersona = dgvPersonas.SelectedRows[0].DataBoundItem as Persona; ;
-            EditarForm editar = new EditarForm(nuevaPersona);
-            editar.ShowDialog();
-            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/Persona/{nuevaPersona.Id}", nuevaPersona);
+            EditarForm editar = new EditarForm(nuevaPersona,personaServicios);
+            editar.ShowDialog();    
 
-            await this.List();
+            this.List();
         }
 
         private async void btEliminar_Click(object sender, EventArgs e)
         {
             if (dgvPersonas.SelectedRows.Count > 0)
-            {
-                // Obtener la fila seleccionada
-                DataGridViewRow selectedRow = dgvPersonas.SelectedRows[0];
-
-                // El nombre de la columna que contiene el ID es "Id"
-                // Acceder al valor del ID de la fila seleccionada:
-                String id = selectedRow.Cells["Id"].Value.ToString();
-
-                // Mostrar un MessageBox de confirmación
+            {                
+                int personaId = (int)dgvPersonas.SelectedRows[0].Cells[0].Value;                
                 DialogResult result = MessageBox.Show("Seguro que quieres eliminar esta persona?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
-                {
-                    // Ahora, la variable 'id' contiene el ID de la fila seleccionada.
-
-                    await _httpClient.DeleteAsync($"api/Persona/{id}");
+                {                
+                 await personaServicios.EliminarPersonaAsync(personaId);
                 }
 
             }
-
-            await this.List();
+            this.List();
         }
     }
 }

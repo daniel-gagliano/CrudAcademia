@@ -7,8 +7,19 @@ using BibliotecaClases;
 
 namespace FormularioEspecialidad.Models
 {
-    internal class EspecialidadList
+    public class EspecialidadList
     {
         public List<Especialidad> especialidadList { get; set; } = new List<Especialidad>();
     }
+
+    public class PersonaList
+    {
+        public List<Persona> personaList { get; set; } = new List<Persona>();
+    }
+
+    public class PlanList
+    {
+        public List<Plan> planList { get; set; } = new List<Plan>();
+    }
 }
+
