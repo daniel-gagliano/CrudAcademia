@@ -1,4 +1,5 @@
 ﻿using BibliotecaClases;
+using Inicio.Servicios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -62,12 +63,13 @@ namespace Inicio.FormularioEspecialidad
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             if (ValidarCampos())
             {
 
                 especialidadEditar.descEspecialidad = txtDescripcion.Text;
+                EspecialidadServicios.Update(especialidadEditar);
                 this.Close();
 
             }

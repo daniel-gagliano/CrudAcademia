@@ -1,61 +1,62 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class CursoServicios
+    public static class CursoServicios
     {
-        private AcademiaContext dbContext;
-
-        public CursoServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Curso";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Curso> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Curso>> ObtenerTodosLosCursosAsync()
-        {
-            return await dbContext.Cursos.ToListAsync();
-        }
-
-        public async Task<Curso> ObtenerCursoPorIdAsync(int id)
-        {
-            return await dbContext.Cursos.FirstOrDefaultAsync(p => p.idCurso == id);
-        }
-
-        public async Task AgregarCursoAsync(Curso curso)
-        {
-            dbContext.Cursos.Add(curso);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarCursoAsync(int id, Curso cursoActualizado)
-        {
-            var cursoExistente = await dbContext.Cursos.FirstOrDefaultAsync(p => p.idCurso == id);
-            if (cursoExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                cursoExistente.idCurso = cursoActualizado.idCurso;
-                cursoExistente.idMateria = cursoActualizado.idMateria;
-                cursoExistente.idComision = cursoActualizado.idComision;
-                cursoExistente.anio = cursoActualizado.anio;
-                cursoExistente.cupo = cursoActualizado.cupo;
-
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var curso = JsonConvert.DeserializeObject<Curso>(responseContent);
+                return curso;
             }
+            else return null;
         }
-
-        public async Task EliminarCursoAsync(int id)
+        public static async Task<List<Curso>> Get()
         {
-            var cursoAEliminar = await dbContext.Cursos.FirstOrDefaultAsync(x => x.idCurso == id);
-            if (cursoAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Cursos.Remove(cursoAEliminar);
-                await dbContext.SaveChangesAsync(true);
+                var content = await response.Content.ReadAsStringAsync();
+                var cursos = JsonConvert.DeserializeObject<List<Curso>>(content);
+                return cursos;
             }
+            else return null;
+        }
+        public static async Task<Curso> Create(Curso Curso)
+        {
+            var CursoJson = JsonConvert.SerializeObject(Curso);
+            var content = new StringContent(CursoJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedCurso = JsonConvert.DeserializeObject<Curso>(responseContent);
+                return addedCurso;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Curso curso)
+        {
+            var cursoJson = JsonConvert.SerializeObject(curso);
+            var content = new StringContent(cursoJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{curso.idCurso}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
+

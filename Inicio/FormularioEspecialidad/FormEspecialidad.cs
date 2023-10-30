@@ -1,4 +1,5 @@
 ﻿using BibliotecaClases;
+using Inicio.Servicios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,12 +16,7 @@ namespace Inicio.FormularioEspecialidad
     public partial class FormEspecialidad : Form
     {
         private List<Especialidad> especialidadList = new List<Especialidad>();
-        private Especialidad nuevaEspecialidad;
 
-        private readonly HttpClient _httpClient = new()
-        {
-            BaseAddress = new Uri("https://localhost:7077")
-        };
         public FormEspecialidad()
         {
             InitializeComponent();
@@ -32,24 +28,9 @@ namespace Inicio.FormularioEspecialidad
         {
 
         }
-        protected int ObtenerUltimoId()
-        {
-            if (especialidadList.Any())
-            {
-                // Ordena la lista de personas por ID de manera descendente y toma el primer elemento
-                Especialidad ultimaEspecialidad = especialidadList.OrderByDescending(p => p.idEspecialidad).First();
-                return ultimaEspecialidad.idEspecialidad;
-            }
-            else
-            {
-                // Si la lista está vacía, devuelve un valor inicial
-                return 0;
-            }
-        }
         protected async Task List()
         {
-            especialidadList = (await _httpClient.GetFromJsonAsync<IEnumerable<Especialidad>>("api/Especialidad")).ToList();
-            this.dgvEspecialidades.DataSource = especialidadList;
+            this.dgvEspecialidades.DataSource = await EspecialidadServicios.Get();
         }
 
         private async void button1_Click(object sender, EventArgs e)
@@ -66,7 +47,7 @@ namespace Inicio.FormularioEspecialidad
 
                 // El nombre de la columna que contiene el ID es "Id"
                 // Acceder al valor del ID de la fila seleccionada:
-                String id = selectedRow.Cells["idEspecialidad"].Value.ToString();
+                int id = (int)selectedRow.Cells["idEspecialidad"].Value;
 
                 // Mostrar un MessageBox de confirmación
                 DialogResult result = MessageBox.Show("Seguro que quieres eliminar esta especialidad?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -75,7 +56,7 @@ namespace Inicio.FormularioEspecialidad
                 {
                     // Ahora, la variable 'id' contiene el ID de la fila seleccionada.
 
-                    await _httpClient.DeleteAsync($"api/Especialidad/{id}");
+                    await EspecialidadServicios.Delete(id);
                 }
 
 
@@ -88,60 +69,37 @@ namespace Inicio.FormularioEspecialidad
         {
             BusquedaForm busqueda = new BusquedaForm();
             busqueda.ShowDialog();
-            String idRecibido = busqueda.id;
+            int idRecibido = int.Parse(busqueda.id);
 
-            if (!string.IsNullOrEmpty(idRecibido))
+            if (idRecibido!=0)
             {
-                var response = await _httpClient.GetAsync($"api/Especialidad/{idRecibido}");
+                var especialidad = await EspecialidadServicios.GetOne(idRecibido);
 
-                if (response.IsSuccessStatusCode)
+                if (especialidad is not null)
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Verifica si la respuesta es una cadena JSON válida.
-                    if (!string.IsNullOrEmpty(jsonResponse) && jsonResponse.StartsWith("{"))
-                    {
-                        var especialidad = await response.Content.ReadFromJsonAsync<Especialidad>();
-                        if (especialidad != null)
-                        {
-                            List<Especialidad> especialidadList = new List<Especialidad> { especialidad };
-                            dgvEspecialidades.DataSource = especialidadList;
-
-                        }
-
-                    }
-                    else
-                    {
-                        // La respuesta no es un JSON válido, muestra un MessageBox.
-                        MessageBox.Show("Especialidad no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-
-
+                    dgvEspecialidades.DataSource = especialidadList;
                 }
                 else
                 {
-                    // Maneja casos en los que la solicitud no fue exitosa (código de estado HTTP diferente de 200).
-                    MessageBox.Show("Ingresa un valor valido", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Especialidad no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+
             }
         }
 
         private async void btAgregar_Click(object sender, EventArgs e)
         {
-            int ultimoId = ObtenerUltimoId();
-            AgregarForm agregar = new AgregarForm(ultimoId + 1);
+            AgregarForm agregar = new AgregarForm();
             agregar.ShowDialog();
-            nuevaEspecialidad = agregar.NuevaEspecialidad;
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Especialidad", nuevaEspecialidad);
             await this.List();
+            
         }
 
         private async void btEditar_Click(object sender, EventArgs e)
         {
-            nuevaEspecialidad = dgvEspecialidades.SelectedRows[0].DataBoundItem as Especialidad; ;
+            var nuevaEspecialidad = dgvEspecialidades.SelectedRows[0].DataBoundItem as Especialidad; ;
             EditarForm editar = new EditarForm(nuevaEspecialidad);
             editar.ShowDialog();
-            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/Especialidad/{nuevaEspecialidad.idEspecialidad}", nuevaEspecialidad);
-
             await this.List();
         }
 

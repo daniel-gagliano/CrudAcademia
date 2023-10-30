@@ -1,62 +1,61 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class MateriaServicios
+    public static class MateriaServicios
     {
-        private AcademiaContext dbContext;
-
-        public MateriaServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Materia";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Materia> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Materia>> ObtenerTodosLasMateriasAsync()
-        {
-            return await dbContext.Materias.ToListAsync();
-        }
-
-        public async Task<Materia> ObtenerMateriaPorIdAsync(int id)
-        {
-            return await dbContext.Materias.FirstOrDefaultAsync(p => p.idMateria == id);
-        }
-
-        public async Task AgregarMateriaAsync(Materia materia)
-        {
-            dbContext.Materias.Add(materia);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarMateriaAsync(int id, Materia materiaActualizada)
-        {
-            var materiaExistente = await dbContext.Materias.FirstOrDefaultAsync(p => p.idMateria == id);
-            if (materiaExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                materiaExistente.idMateria = materiaActualizada.idMateria;
-                materiaExistente.idPlan = materiaActualizada.idPlan;
-                materiaExistente.descMateria = materiaActualizada.descMateria;
-                materiaExistente.hsSemanales = materiaActualizada.hsSemanales;
-                materiaExistente.hsTotales = materiaActualizada.hsTotales;
-
-
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var materia = JsonConvert.DeserializeObject<Materia>(responseContent);
+                return materia;
             }
+            else return null;
         }
-
-        public async Task EliminarMateriaAsync(int id)
+        public static async Task<List<Materia>> Get()
         {
-            var materiaAEliminar = await dbContext.Materias.FirstOrDefaultAsync(x => x.idMateria == id);
-            if (materiaAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Materias.Remove(materiaAEliminar);
-                await dbContext.SaveChangesAsync(true);
+                var content = await response.Content.ReadAsStringAsync();
+                var materias = JsonConvert.DeserializeObject<List<Materia>>(content);
+                return materias;
             }
+            else return null;
+        }
+        public static async Task<Materia> Create(Materia materia)
+        {
+            var materiaJson = JsonConvert.SerializeObject(materia);
+            var content = new StringContent(materiaJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedMateria = JsonConvert.DeserializeObject<Materia>(responseContent);
+                return addedMateria;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Materia materia)
+        {
+            var materiaJson = JsonConvert.SerializeObject(materia);
+            var content = new StringContent(materiaJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{materia.idMateria}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }

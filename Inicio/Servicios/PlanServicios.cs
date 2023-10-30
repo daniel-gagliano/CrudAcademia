@@ -1,58 +1,63 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class PlanServicios
+    public static class PlanServicios
     {
-        private AcademiaContext dbContext;
-
-        public PlanServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Plan";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Plan> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Plan>> ObtenerTodosLosPlanesAsync()
-        {
-            return await dbContext.Plan.ToListAsync();
-        }
-
-        public async Task<Plan> ObtenerPlanPorIdAsync(int id)
-        {
-            return await dbContext.Plan.FirstOrDefaultAsync(p => p.idPlan == id);
-        }
-
-        public async Task AgregarPlanAsync(Plan plan)
-        {
-            dbContext.Plan.Add(plan);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarPlanAsync(int id, Plan planActualizado)
-        {
-            var planExistente = await dbContext.Plan.FirstOrDefaultAsync(p => p.idPlan == id);
-            if (planExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                planExistente.idPlan = planActualizado.idPlan;
-                planExistente.descPlan = planActualizado.descPlan;
-                planExistente.idEspecialidad = planActualizado.idEspecialidad;
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var plan = JsonConvert.DeserializeObject<Plan>(responseContent);
+                return plan;
             }
+            else return null;
         }
-
-        public async Task EliminarPlanAsync(int id)
+        public static async Task<List<Plan>> Get()
         {
-            var planAEliminar = await dbContext.Plan.FirstOrDefaultAsync(x => x.idPlan == id);
-            if (planAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Plan.Remove(planAEliminar);
-                await dbContext.SaveChangesAsync(true);
+                var content = await response.Content.ReadAsStringAsync();
+                var planes = JsonConvert.DeserializeObject<List<Plan>>(content);
+                return planes;
             }
+            else return null;
+        }
+        public static async Task<Plan> Create(Plan Plan)
+        {
+            var PlanJson = JsonConvert.SerializeObject(Plan);
+            var content = new StringContent(PlanJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedPlan = JsonConvert.DeserializeObject<Plan>(responseContent);
+                return addedPlan;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Plan plan)
+        {
+            var planJson = JsonConvert.SerializeObject(plan);
+            var content = new StringContent(planJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{plan.idPlan}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
+
+

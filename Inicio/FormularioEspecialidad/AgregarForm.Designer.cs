@@ -29,9 +29,7 @@
         private void InitializeComponent()
         {
             label1 = new Label();
-            txtID = new TextBox();
             txtDescripcion = new TextBox();
-            label9 = new Label();
             button2 = new Button();
             button1 = new Button();
             SuspendLayout();
@@ -39,39 +37,22 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(42, 76);
+            label1.Location = new Point(47, 45);
             label1.Name = "label1";
             label1.Size = new Size(69, 15);
             label1.TabIndex = 58;
             label1.Text = "Descripcion";
             // 
-            // txtID
-            // 
-            txtID.Enabled = false;
-            txtID.Location = new Point(140, 24);
-            txtID.Name = "txtID";
-            txtID.Size = new Size(100, 23);
-            txtID.TabIndex = 62;
-            // 
             // txtDescripcion
             // 
-            txtDescripcion.Location = new Point(140, 73);
+            txtDescripcion.Location = new Point(145, 42);
             txtDescripcion.Name = "txtDescripcion";
             txtDescripcion.Size = new Size(100, 23);
             txtDescripcion.TabIndex = 59;
             // 
-            // label9
-            // 
-            label9.AutoSize = true;
-            label9.Location = new Point(35, 27);
-            label9.Name = "label9";
-            label9.Size = new Size(86, 15);
-            label9.TabIndex = 61;
-            label9.Text = "ID Especialidad";
-            // 
             // button2
             // 
-            button2.Location = new Point(163, 126);
+            button2.Location = new Point(168, 95);
             button2.Name = "button2";
             button2.Size = new Size(108, 35);
             button2.TabIndex = 60;
@@ -81,7 +62,7 @@
             // 
             // button1
             // 
-            button1.Location = new Point(26, 126);
+            button1.Location = new Point(31, 95);
             button1.Name = "button1";
             button1.Size = new Size(111, 35);
             button1.TabIndex = 57;
@@ -93,15 +74,13 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(310, 183);
+            ClientSize = new Size(310, 156);
             Controls.Add(label1);
-            Controls.Add(txtID);
             Controls.Add(txtDescripcion);
-            Controls.Add(label9);
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "AgregarForm";
-            Text = "AgregarForm";
+            Text = "Agregar especialidad";
             Load += AgregarForm_Load;
             ResumeLayout(false);
             PerformLayout();
@@ -110,9 +89,7 @@
         #endregion
 
         private Label label1;
-        private TextBox txtID;
         private TextBox txtDescripcion;
-        private Label label9;
         private Button button2;
         private Button button1;
     }

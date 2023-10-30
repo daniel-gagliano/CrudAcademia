@@ -1,60 +1,62 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class DictadoServicios
+    public static class DictadoServicios
     {
-        private AcademiaContext dbContext;
-
-        public DictadoServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Dictado";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Dictado> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Dictado>> ObtenerTodosLosDictadosAsync()
-        {
-            return await dbContext.Dictados.ToListAsync();
-        }
-
-        public async Task<Dictado> ObtenerDictadoPorIdAsync(int id)
-        {
-            return await dbContext.Dictados.FirstOrDefaultAsync(p => p.idDictado == id);
-        }
-
-        public async Task AgregarDictadoAsync(Dictado dictado)
-        {
-            dbContext.Dictados.Add(dictado);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarDictadoAsync(int id, Dictado dictadoActualizado)
-        {
-            var dictadoExistente = await dbContext.Dictados.FirstOrDefaultAsync(p => p.idDictado == id);
-            if (dictadoExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                dictadoExistente.idDictado = dictadoActualizado.idDictado;
-                dictadoExistente.idCurso = dictadoActualizado.idCurso;
-                dictadoExistente.idDocente = dictadoActualizado.idDocente;
-                dictadoExistente.cargo = dictadoActualizado.cargo;
-
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var dictado = JsonConvert.DeserializeObject<Dictado>(responseContent);
+                return dictado;
             }
+            else return null;
         }
-
-        public async Task EliminarDictadoAsync(int id)
+        public static async Task<List<Dictado>> Get()
         {
-            var dictadoAEliminar = await dbContext.Dictados.FirstOrDefaultAsync(x => x.idDictado == id);
-            if (dictadoAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Dictados.Remove(dictadoAEliminar);
-                await dbContext.SaveChangesAsync(true);
+                var content = await response.Content.ReadAsStringAsync();
+                var dictados = JsonConvert.DeserializeObject<List<Dictado>>(content);
+                return dictados;
             }
+            else return null;
+        }
+        public static async Task<Dictado> Create(Dictado Dictado)
+        {
+            var DictadoJson = JsonConvert.SerializeObject(Dictado);
+            var content = new StringContent(DictadoJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedDictado = JsonConvert.DeserializeObject<Dictado>(responseContent);
+                return addedDictado;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Dictado dictado)
+        {
+            var dictadoJson = JsonConvert.SerializeObject(dictado);
+            var content = new StringContent(dictadoJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{dictado.idDictado}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
+

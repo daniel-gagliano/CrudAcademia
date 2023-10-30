@@ -14,19 +14,17 @@ namespace Inicio.FormularioPersona
 {
     public partial class EditarForm : Form
     {
-        private PersonaServicios PersonaServicios;
         private Persona personaAEditar;
-        public EditarForm(Persona persona, PersonaServicios personaServicios)
+        public EditarForm(Persona persona)
         {
             InitializeComponent();
-            this.PersonaServicios = personaServicios;
             this.personaAEditar = persona;
+            txtId.Text = persona.Id.ToString();
             txtApellido.Text = persona.apellido;
             txtNombre.Text = persona.nombre;
             txtDireccion.Text = persona.direccion;
             txtEmail.Text = persona.email;
             txtTelefono.Text = persona.telefono;
-            txtTipoPersona.Text = persona.tipoPersona;
             txtIdPlan.Text = persona.IdPlan.ToString();
             txtLegajo.Text = persona.legajo.ToString();
         }
@@ -35,7 +33,7 @@ namespace Inicio.FormularioPersona
             if (string.IsNullOrWhiteSpace(txtApellido.Text) || string.IsNullOrWhiteSpace(txtDireccion.Text) ||
                 string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtIdPlan.Text) || string.IsNullOrWhiteSpace(txtLegajo.Text) ||
-                string.IsNullOrWhiteSpace(txtTelefono.Text) || string.IsNullOrWhiteSpace(txtTipoPersona.Text))
+                string.IsNullOrWhiteSpace(txtTelefono.Text))
             {
                 return false; // Al menos uno de los campos está vacío o en blanco.
             }
@@ -58,13 +56,12 @@ namespace Inicio.FormularioPersona
                     personaAEditar.email = txtEmail.Text;
                     personaAEditar.apellido = txtApellido.Text;
                     personaAEditar.nombre = txtNombre.Text;
-                    personaAEditar.tipoPersona = txtTipoPersona.Text;
                     personaAEditar.telefono = txtTelefono.Text;
                     personaAEditar.direccion = txtDireccion.Text;
                     personaAEditar.IdPlan = Convert.ToInt32(txtIdPlan.Text);
                     personaAEditar.legajo = Convert.ToInt32(txtLegajo.Text);
 
-                    await PersonaServicios.EditarPersonaAsync(personaAEditar.Id, personaAEditar);
+                    await PersonaServicios.Update(personaAEditar);
                     this.Close();
                 }
                 else

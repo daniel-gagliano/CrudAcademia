@@ -1,59 +1,61 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class EspecialidadServicios
+    public static class EspecialidadServicios
     {
-        private AcademiaContext dbContext;
-
-        public EspecialidadServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Especialidad";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Especialidad> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Especialidad>> ObtenerTodasLasEspecialidadesAsync()
-        {
-            return await dbContext.Especialidad.ToListAsync();
-        }
-
-        public async Task<Especialidad> ObtenerEspecialidadPorIdAsync(int id)
-        {
-
-            return await dbContext.Especialidad.FirstOrDefaultAsync(p => p.idEspecialidad == id);
-        }
-
-        public async Task AgregarEspecialidadAsync(Especialidad especialidad)
-        {
-            dbContext.Especialidad.Add(especialidad);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarEspecialidadAsync(int id, Especialidad especialidadActualizada)
-        {
-            var especialidadExistente = await dbContext.Especialidad.FirstOrDefaultAsync(p => p.idEspecialidad == id);
-            if (especialidadExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                especialidadExistente.idEspecialidad = especialidadActualizada.idEspecialidad;
-                especialidadExistente.descEspecialidad = especialidadActualizada.descEspecialidad;
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var especialidad = JsonConvert.DeserializeObject<Especialidad>(responseContent);
+                return especialidad;
             }
+            else return null;
         }
-
-        public async Task EliminarEspecialidadAsync(int id)
+        public static async Task<List<Especialidad>> Get()
         {
-            var especialidadAEliminar = await dbContext.Especialidad.FirstOrDefaultAsync(x => x.idEspecialidad == id);
-            if (especialidadAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Especialidad.Remove(especialidadAEliminar);
-                await dbContext.SaveChangesAsync(true);
-
+                var content = await response.Content.ReadAsStringAsync();
+                var especialidades = JsonConvert.DeserializeObject<List<Especialidad>>(content);
+                return especialidades;
             }
+            else return null;
+        }
+        public static async Task<Especialidad> Create(Especialidad Especialidad)
+        {
+            var EspecialidadJson = JsonConvert.SerializeObject(Especialidad);
+            var content = new StringContent(EspecialidadJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedEspecialidad = JsonConvert.DeserializeObject<Especialidad>(responseContent);
+                return addedEspecialidad;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Especialidad especialidad)
+        {
+            var especialidadJson = JsonConvert.SerializeObject(especialidad);
+            var content = new StringContent(especialidadJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{especialidad.idEspecialidad}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }

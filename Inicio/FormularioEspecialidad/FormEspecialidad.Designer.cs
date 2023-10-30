@@ -154,7 +154,7 @@
             Controls.Add(btConsultar);
             Controls.Add(dgvEspecialidades);
             Name = "FormEspecialidad";
-            Text = "FormEspecialidad";
+            Text = "Administración de especialidades";
             Load += FormEspecialidad_Load;
             ((System.ComponentModel.ISupportInitialize)dgvEspecialidades).EndInit();
             ResumeLayout(false);

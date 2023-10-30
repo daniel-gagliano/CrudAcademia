@@ -1,4 +1,5 @@
 ﻿using BibliotecaClases;
+using Inicio.Servicios;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,11 +14,9 @@ namespace Inicio.FormularioEspecialidad
 {
     public partial class AgregarForm : Form
     {
-        public Especialidad NuevaEspecialidad { get; private set; }
-        public AgregarForm(int ultimoId)
+        public AgregarForm()
         {
             InitializeComponent();
-            txtID.Text = (ultimoId).ToString();
         }
 
         private void AgregarForm_Load(object sender, EventArgs e)
@@ -42,7 +41,7 @@ namespace Inicio.FormularioEspecialidad
             return true; // Todos los campos son válidos.
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             //Recopilar los datos
             if (ValidarCampos())
@@ -57,7 +56,7 @@ namespace Inicio.FormularioEspecialidad
                     descEspecialidad = descripcion,
 
                 };
-                NuevaEspecialidad = nuevaEspecialidad;
+                await EspecialidadServicios.Create(nuevaEspecialidad);
                 this.Close();
             }
             else

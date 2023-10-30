@@ -1,67 +1,62 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
-{    
-    public class PersonaServicios
+{
+    public static class PersonaServicios
     {
-        private AcademiaContext dbContext;
-
-        public PersonaServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Persona";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Persona> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Persona>> ObtenerTodasLasPersonasAsync()
-        {
-            return await dbContext.Persona.ToListAsync();
-        }
-
-        public async Task<Persona> ObtenerPersonaPorIdAsync(int id)
-        {
-            
-            return await dbContext.Persona.FirstOrDefaultAsync(p => p.Id == id);
-        }
-
-        public async Task AgregarPersonaAsync(Persona persona)
-        {
-            dbContext.Persona.Add(persona);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarPersonaAsync(int id, Persona personaActualizada)
-        {
-            var personaExistente = await dbContext.Persona.FirstOrDefaultAsync(p=>p.Id == id);
-            if (personaExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                personaExistente.Id = personaActualizada.Id;
-                personaExistente.apellido = personaActualizada.apellido;
-                personaExistente.direccion = personaActualizada.direccion;
-                personaExistente.nombre = personaActualizada.nombre;
-                personaExistente.email = personaActualizada.email;
-                personaExistente.fechaNacimiento = personaActualizada.fechaNacimiento;
-                personaExistente.IdPlan = personaActualizada.IdPlan;
-                personaExistente.legajo = personaActualizada.legajo;
-                personaExistente.telefono = personaActualizada.telefono;
-                personaExistente.tipoPersona = personaActualizada.tipoPersona;
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var persona = JsonConvert.DeserializeObject<Persona>(responseContent);
+                return persona;
             }
+            else return null;
         }
-
-        public async Task EliminarPersonaAsync(int id)
+        public static async Task<List<Persona>> Get()
         {
-            var personaAEliminar = await dbContext.Persona.FirstOrDefaultAsync(x => x.Id == id);
-            if(personaAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Persona.Remove(personaAEliminar);
-                await dbContext.SaveChangesAsync(true);
-
+                var content = await response.Content.ReadAsStringAsync();
+                var personas = JsonConvert.DeserializeObject<List<Persona>>(content);
+                return personas;
             }
-        }        
+            else return null;
+        }
+        public static async Task<Persona> Create(Persona persona)
+        {
+            var personaJson = JsonConvert.SerializeObject(persona);
+            var content = new StringContent(personaJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedpersona = JsonConvert.DeserializeObject<Persona>(responseContent);
+                return addedpersona;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Persona persona)
+        {
+            var personaJson = JsonConvert.SerializeObject(persona);
+            var content = new StringContent(personaJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{persona.Id}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }
+

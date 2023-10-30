@@ -28,5 +28,10 @@ namespace Inicio
             FormEspecialidad especialidadesCrud = new FormEspecialidad();
             especialidadesCrud.ShowDialog();
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

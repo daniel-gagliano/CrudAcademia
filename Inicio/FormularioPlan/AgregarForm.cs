@@ -1,5 +1,6 @@
 ﻿using BibliotecaClases;
 using CrudAcademia.Context;
+using Inicio.Servicios;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -17,33 +18,15 @@ namespace Inicio.FormularioPlan
 {
     public partial class AgregarForm : Form
     {
-        public Plan NuevoPlan { get; private set; }
-        private DbContextOptionsBuilder<AcademiaContext> optionsBuilder;
-        private AcademiaContext context;
-        public AgregarForm(int ultimoId)
+        public AgregarForm()
         {
             InitializeComponent();
-
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            var connectionString = configuration.GetConnectionString("dbAcademia");
-
-            optionsBuilder = new DbContextOptionsBuilder<AcademiaContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-
-
-
-
-            txtID.Text = (ultimoId).ToString();
-            context = new AcademiaContext(optionsBuilder.Options);
             CargarEspecialidad();
         }
 
-        private void CargarEspecialidad()
+        private async void CargarEspecialidad()
         {
-            var especialidades = context.Especialidad.ToList();
+            var especialidades = await EspecialidadServicios.Get();
             txtEspecialidad.DataSource = especialidades;
             txtEspecialidad.DisplayMember = "descEspecialidad"; // Establece la propiedad que se mostrará en el ComboBox
             txtEspecialidad.ValueMember = "idEspecialidad"; // Establece la propiedad que se utilizará como valor seleccionado
@@ -65,26 +48,20 @@ namespace Inicio.FormularioPlan
             this.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
             //Recopilar los datos
             if (ValidarCampos())
             {
-                int ultimoID = Convert.ToInt32(txtID.Text);
-                String descripcion = txtDescripcion.Text;
-                int IdEspecialidad = (int)txtEspecialidad.SelectedValue;
-
                 //Crear nueva persona
                 Plan nuevoPlan = new Plan()
                 {
 
-                    descPlan = descripcion,
-                    idEspecialidad = IdEspecialidad,
+                    descPlan = txtDescripcion.Text,
+                    idEspecialidad = (int)txtEspecialidad.SelectedValue,
                 };
-                NuevoPlan = nuevoPlan;
+                await PlanServicios.Create(nuevoPlan);
                 this.Close();
-
-
             }
             else
             {

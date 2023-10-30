@@ -1,59 +1,62 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class ComisionServicios
+    public static class ComisionServicios
     {
-        private AcademiaContext dbContext;
-
-        public ComisionServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Comision";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Comision> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Comision>> ObtenerTodosLasComisionesAsync()
-        {
-            return await dbContext.Comisiones.ToListAsync();
-        }
-
-        public async Task<Comision> ObtenerComisionPorIdAsync(int id)
-        {
-            return await dbContext.Comisiones.FirstOrDefaultAsync(p => p.idComision == id);
-        }
-
-        public async Task AgregarComisionAsync(Comision comision)
-        {
-            dbContext.Comisiones.Add(comision);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarComisionAsync(int id, Comision comisionActualizada)
-        {
-            var comisionExistente = await dbContext.Comisiones.FirstOrDefaultAsync(p => p.idComision == id);
-            if (comisionExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                comisionExistente.idComision = comisionActualizada.idComision;
-                comisionExistente.descComision = comisionActualizada.descComision;
-                comisionExistente.anioEspecialidad = comisionActualizada.anioEspecialidad;
-                comisionExistente.idPlan = comisionActualizada.idPlan;
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var comision = JsonConvert.DeserializeObject<Comision>(responseContent);
+                return comision;
             }
+            else return null;
         }
-
-        public async Task EliminarComisionAsync(int id)
+        public static async Task<List<Comision>> Get()
         {
-            var comisionAEliminar = await dbContext.Comisiones.FirstOrDefaultAsync(x => x.idComision == id);
-            if (comisionAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Comisiones.Remove(comisionAEliminar);
-                await dbContext.SaveChangesAsync(true);
+                var content = await response.Content.ReadAsStringAsync();
+                var comisiones = JsonConvert.DeserializeObject<List<Comision>>(content);
+                return comisiones;
             }
+            else return null;
+        }
+        public static async Task<Comision> Create(Comision Comision)
+        {
+            var ComisionJson = JsonConvert.SerializeObject(Comision);
+            var content = new StringContent(ComisionJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedComision = JsonConvert.DeserializeObject<Comision>(responseContent);
+                return addedComision;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Comision comision)
+        {
+            var comisionJson = JsonConvert.SerializeObject(comision);
+            var content = new StringContent(comisionJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{comision.idComision}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
+

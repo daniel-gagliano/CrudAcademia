@@ -1,6 +1,6 @@
-﻿namespace Inicio.FormularioPlan
+﻿namespace Inicio.FormularioMateria
 {
-    partial class FormPlan
+    partial class FormMateria
     {
         /// <summary>
         /// Required designer variable.
@@ -35,8 +35,8 @@
             btEditar = new Button();
             btAgregar = new Button();
             btConsultar = new Button();
-            dgvPlanes = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)dgvPlanes).BeginInit();
+            dgvPersonas = new DataGridView();
+            ((System.ComponentModel.ISupportInitialize)dgvPersonas).BeginInit();
             SuspendLayout();
             // 
             // button2
@@ -45,10 +45,9 @@
             button2.Location = new Point(496, 56);
             button2.Name = "button2";
             button2.Size = new Size(85, 39);
-            button2.TabIndex = 15;
+            button2.TabIndex = 23;
             button2.Text = "Inicio";
             button2.UseVisualStyleBackColor = true;
-            button2.Click += button2_Click;
             // 
             // button1
             // 
@@ -56,7 +55,7 @@
             button1.Location = new Point(275, 28);
             button1.Name = "button1";
             button1.Size = new Size(60, 67);
-            button1.TabIndex = 14;
+            button1.TabIndex = 22;
             button1.Text = "⭮";
             button1.TextAlign = ContentAlignment.TopLeft;
             button1.UseVisualStyleBackColor = true;
@@ -68,9 +67,9 @@
             label1.Font = new Font("Berlin Sans FB", 39.75F, FontStyle.Regular, GraphicsUnit.Point);
             label1.Location = new Point(51, 30);
             label1.Name = "label1";
-            label1.Size = new Size(168, 58);
-            label1.TabIndex = 13;
-            label1.Text = "Planes";
+            label1.Size = new Size(213, 58);
+            label1.TabIndex = 21;
+            label1.Text = "Materias";
             // 
             // btEliminar
             // 
@@ -80,10 +79,9 @@
             btEliminar.Location = new Point(616, 363);
             btEliminar.Name = "btEliminar";
             btEliminar.Size = new Size(134, 60);
-            btEliminar.TabIndex = 12;
+            btEliminar.TabIndex = 20;
             btEliminar.Text = "Eliminar";
             btEliminar.UseVisualStyleBackColor = false;
-            btEliminar.Click += btEliminar_Click;
             // 
             // btEditar
             // 
@@ -93,10 +91,9 @@
             btEditar.Location = new Point(616, 279);
             btEditar.Name = "btEditar";
             btEditar.Size = new Size(134, 60);
-            btEditar.TabIndex = 11;
+            btEditar.TabIndex = 19;
             btEditar.Text = "Editar";
             btEditar.UseVisualStyleBackColor = false;
-            btEditar.Click += btEditar_Click;
             // 
             // btAgregar
             // 
@@ -106,10 +103,9 @@
             btAgregar.Location = new Point(616, 197);
             btAgregar.Name = "btAgregar";
             btAgregar.Size = new Size(134, 60);
-            btAgregar.TabIndex = 10;
+            btAgregar.TabIndex = 18;
             btAgregar.Text = "Agregar";
             btAgregar.UseVisualStyleBackColor = false;
-            btAgregar.Click += btAgregar_Click;
             // 
             // btConsultar
             // 
@@ -119,27 +115,25 @@
             btConsultar.Location = new Point(616, 115);
             btConsultar.Name = "btConsultar";
             btConsultar.Size = new Size(134, 60);
-            btConsultar.TabIndex = 9;
+            btConsultar.TabIndex = 17;
             btConsultar.Text = "Consultar";
             btConsultar.UseVisualStyleBackColor = false;
-            btConsultar.Click += btConsultar_Click;
             // 
-            // dgvPlanes
+            // dgvPersonas
             // 
-            dgvPlanes.AllowUserToAddRows = false;
-            dgvPlanes.AllowUserToDeleteRows = false;
-            dgvPlanes.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            dgvPlanes.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            dgvPlanes.Location = new Point(51, 115);
-            dgvPlanes.MultiSelect = false;
-            dgvPlanes.Name = "dgvPlanes";
-            dgvPlanes.ReadOnly = true;
-            dgvPlanes.RowTemplate.Height = 25;
-            dgvPlanes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvPlanes.Size = new Size(530, 308);
-            dgvPlanes.TabIndex = 8;
+            dgvPersonas.AllowUserToAddRows = false;
+            dgvPersonas.AllowUserToDeleteRows = false;
+            dgvPersonas.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dgvPersonas.Location = new Point(51, 115);
+            dgvPersonas.MultiSelect = false;
+            dgvPersonas.Name = "dgvPersonas";
+            dgvPersonas.ReadOnly = true;
+            dgvPersonas.RowTemplate.Height = 25;
+            dgvPersonas.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            dgvPersonas.Size = new Size(530, 308);
+            dgvPersonas.TabIndex = 16;
             // 
-            // FormPlan
+            // FormMateria
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
@@ -151,11 +145,11 @@
             Controls.Add(btEditar);
             Controls.Add(btAgregar);
             Controls.Add(btConsultar);
-            Controls.Add(dgvPlanes);
-            Name = "FormPlan";
-            Text = "Administración de planes";
-            Load += FormPlan_Load;
-            ((System.ComponentModel.ISupportInitialize)dgvPlanes).EndInit();
+            Controls.Add(dgvPersonas);
+            Name = "FormMateria";
+            Text = "Administración de materias";
+            Load += Form1_Load;
+            ((System.ComponentModel.ISupportInitialize)dgvPersonas).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -169,6 +163,6 @@
         private Button btEditar;
         private Button btAgregar;
         private Button btConsultar;
-        private DataGridView dgvPlanes;
+        private DataGridView dgvPersonas;
     }
 }

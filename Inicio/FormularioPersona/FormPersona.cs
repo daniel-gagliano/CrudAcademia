@@ -18,56 +18,19 @@ namespace Inicio.FormularioPersona
 {
     public partial class FormPersona : Form
     {
-        private DbContextOptionsBuilder<AcademiaContext> optionsBuilder;
-        private AcademiaContext dbContext;
-        private PersonaServicios personaServicios;
-        private UsuarioServicios usuarioServicios;
         private List<Persona> personaList = new List<Persona>();
-        private Persona nuevaPersona;
-        private Usuario nuevoUsuario;
-
-        private readonly HttpClient _httpClient = new()
-        {
-            BaseAddress = new Uri("https://localhost:7077")
-        };
 
         public FormPersona()
         {
             InitializeComponent();
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-                .AddJsonFile("appsettings.json")
-                .Build();
-            var connectionString = configuration.GetConnectionString("dbAcademia");
-
-            optionsBuilder = new DbContextOptionsBuilder<AcademiaContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-            dbContext = new AcademiaContext(optionsBuilder.Options);
-
-            personaServicios = new PersonaServicios(dbContext);
-            usuarioServicios = new UsuarioServicios(dbContext);
 
 
             this.List();
             
         }
-        protected int ObtenerUltimoId()
-        {
-            if (personaList.Any())
-            {
-                // Ordena la lista de personas por ID de manera descendente y toma el primer elemento
-                Persona ultimaPersona = personaList.OrderByDescending(p => p.Id).First();
-                return ultimaPersona.Id;
-            }
-            else
-            {
-                // Si la lista está vacía, devuelve un valor inicial
-                return 0;
-            }
-        }
         private async void List()
         {
-            var personas = await personaServicios.ObtenerTodasLasPersonasAsync();
+            var personas = await PersonaServicios.Get();
             dgvPersonas.DataSource = personas;
         }
 
@@ -89,7 +52,7 @@ namespace Inicio.FormularioPersona
             {
                 if (int.TryParse(busqueda.id, out int idRecibido) && idRecibido > 0)
                 {                
-                    var persona = await personaServicios.ObtenerPersonaPorIdAsync(idRecibido);
+                    var persona = await PersonaServicios.GetOne(idRecibido);
 
                     if (persona != null)
                     {
@@ -110,18 +73,15 @@ namespace Inicio.FormularioPersona
 
         private async void btAgregar_Click(object sender, EventArgs e)
         {
-            int ultimoId = ObtenerUltimoId();
-            AgregarForm agregar = new AgregarForm(ultimoId + 1,personaServicios,usuarioServicios);
+            AgregarForm agregar = new AgregarForm();
             agregar.ShowDialog();
-            nuevaPersona = agregar.NuevaPersona;
-            nuevoUsuario = agregar.NuevoUsuario;
             this.List();
         }
 
         private async void btEditar_Click(object sender, EventArgs e)
         {
-            nuevaPersona = dgvPersonas.SelectedRows[0].DataBoundItem as Persona; ;
-            EditarForm editar = new EditarForm(nuevaPersona,personaServicios);
+            var editPersona = dgvPersonas.SelectedRows[0].DataBoundItem as Persona;
+            EditarForm editar = new EditarForm(editPersona);
             editar.ShowDialog();    
 
             this.List();
@@ -136,7 +96,7 @@ namespace Inicio.FormularioPersona
 
                 if (result == DialogResult.Yes)
                 {                
-                 await personaServicios.EliminarPersonaAsync(personaId);
+                 await PersonaServicios.Delete(personaId);
                 }
 
             }

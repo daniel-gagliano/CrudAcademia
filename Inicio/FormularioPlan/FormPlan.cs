@@ -146,7 +146,7 @@ namespace Inicio.FormularioPlan
 
         private async void FormPlan_Load(object sender, EventArgs e)
         {
-           await this.List();
+            await this.List();
         }
     }
 }

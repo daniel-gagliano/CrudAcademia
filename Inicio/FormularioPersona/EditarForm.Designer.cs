@@ -30,11 +30,9 @@
         {
             groupBox2 = new GroupBox();
             txtIdPlan = new ComboBox();
-            txtTipoPersona = new ComboBox();
             txtLegajo = new TextBox();
             label6 = new Label();
             label5 = new Label();
-            label8 = new Label();
             groupBox1 = new GroupBox();
             label1 = new Label();
             label3 = new Label();
@@ -48,6 +46,8 @@
             label7 = new Label();
             button2 = new Button();
             button1 = new Button();
+            txtId = new TextBox();
+            label8 = new Label();
             groupBox2.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -55,14 +55,12 @@
             // groupBox2
             // 
             groupBox2.Controls.Add(txtIdPlan);
-            groupBox2.Controls.Add(txtTipoPersona);
             groupBox2.Controls.Add(txtLegajo);
             groupBox2.Controls.Add(label6);
             groupBox2.Controls.Add(label5);
-            groupBox2.Controls.Add(label8);
-            groupBox2.Location = new Point(328, 31);
+            groupBox2.Location = new Point(309, 77);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(284, 162);
+            groupBox2.Size = new Size(284, 119);
             groupBox2.TabIndex = 68;
             groupBox2.TabStop = false;
             groupBox2.Text = "Academia";
@@ -76,16 +74,6 @@
             txtIdPlan.Name = "txtIdPlan";
             txtIdPlan.Size = new Size(121, 23);
             txtIdPlan.TabIndex = 55;
-            // 
-            // txtTipoPersona
-            // 
-            txtTipoPersona.DropDownStyle = ComboBoxStyle.DropDownList;
-            txtTipoPersona.FormattingEnabled = true;
-            txtTipoPersona.Items.AddRange(new object[] { "Estudiante", "Profesor" });
-            txtTipoPersona.Location = new Point(124, 113);
-            txtTipoPersona.Name = "txtTipoPersona";
-            txtTipoPersona.Size = new Size(121, 23);
-            txtTipoPersona.TabIndex = 54;
             // 
             // txtLegajo
             // 
@@ -112,15 +100,6 @@
             label5.TabIndex = 42;
             label5.Text = "ID Plan";
             // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.Location = new Point(11, 113);
-            label8.Name = "label8";
-            label8.Size = new Size(91, 15);
-            label8.TabIndex = 45;
-            label8.Text = "Tipo de persona";
-            // 
             // groupBox1
             // 
             groupBox1.Controls.Add(label1);
@@ -133,7 +112,7 @@
             groupBox1.Controls.Add(txtApellido);
             groupBox1.Controls.Add(txtEmail);
             groupBox1.Controls.Add(label7);
-            groupBox1.Location = new Point(21, 31);
+            groupBox1.Location = new Point(21, 64);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(247, 202);
             groupBox1.TabIndex = 67;
@@ -240,33 +219,51 @@
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
+            // txtId
+            // 
+            txtId.Enabled = false;
+            txtId.Location = new Point(55, 22);
+            txtId.Name = "txtId";
+            txtId.Size = new Size(80, 23);
+            txtId.TabIndex = 69;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new Point(32, 25);
+            label8.Name = "label8";
+            label8.Size = new Size(17, 15);
+            label8.TabIndex = 70;
+            label8.Text = "Id";
+            // 
             // EditarForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(617, 290);
+            Controls.Add(label8);
+            Controls.Add(txtId);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "EditarForm";
-            Text = "EditarForm";
+            Text = "Editar persona";
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
 
         private GroupBox groupBox2;
         private ComboBox txtIdPlan;
-        private ComboBox txtTipoPersona;
         private TextBox txtLegajo;
         private Label label6;
         private Label label5;
-        private Label label8;
         private GroupBox groupBox1;
         private Label label1;
         private Label label3;
@@ -280,5 +277,7 @@
         private Label label7;
         private Button button2;
         private Button button1;
+        private TextBox txtId;
+        private Label label8;
     }
 }

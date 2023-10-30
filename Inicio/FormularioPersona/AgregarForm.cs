@@ -18,39 +18,16 @@ namespace Inicio.FormularioPersona
 {
     public partial class AgregarForm : Form
     {
-        private PersonaServicios personaServicios;
-        private UsuarioServicios usuarioServicios;
-        public Persona NuevaPersona { get; private set; }
-        public Usuario NuevoUsuario { get; private set; }
-
-        private AcademiaContext context;
-        private DbContextOptionsBuilder<AcademiaContext> optionsBuilder;
-
-
-        public AgregarForm(int ultimoId, PersonaServicios personaServicios, UsuarioServicios usuarioServicios)
+        public AgregarForm()
         {
             InitializeComponent();
-            var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-             .AddJsonFile("appsettings.json")
-              .Build();
-            var connectionString = configuration.GetConnectionString("dbAcademia");
-
-            optionsBuilder = new DbContextOptionsBuilder<AcademiaContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-
-            txtID.Text = (ultimoId).ToString();
-            context = new AcademiaContext(optionsBuilder.Options);
             CargarPlanes();
-
-            this.personaServicios = personaServicios;
-            this.usuarioServicios = usuarioServicios;
         }
-        private void CargarPlanes()
+        private async void CargarPlanes()
         {
 
             // Obtiene las especialidades de la base de datos
-            var planes = context.Plan.ToList();
+            var planes = await PlanServicios.Get();
 
             // Enlaza la lista de especialidades al ComboBox
             txtIdPlan.DataSource = planes;
@@ -63,7 +40,7 @@ namespace Inicio.FormularioPersona
             if (string.IsNullOrWhiteSpace(txtApellido.Text) || string.IsNullOrWhiteSpace(txtDireccion.Text) ||
                 string.IsNullOrWhiteSpace(txtNombre.Text) || string.IsNullOrWhiteSpace(txtEmail.Text) ||
                 string.IsNullOrWhiteSpace(txtIdPlan.Text) || string.IsNullOrWhiteSpace(txtLegajo.Text) ||
-                string.IsNullOrWhiteSpace(txtTelefono.Text) || string.IsNullOrWhiteSpace(txtTipoPersona.Text)||
+                string.IsNullOrWhiteSpace(txtTelefono.Text) || string.IsNullOrWhiteSpace(txtTipoPersona.Text) ||
                 string.IsNullOrWhiteSpace(txtUsuario.Text) || string.IsNullOrWhiteSpace(txtContraseña.Text))
 
 
@@ -88,7 +65,6 @@ namespace Inicio.FormularioPersona
                 if (int.TryParse(txtLegajo.Text, out int legajoOk))
                 {
                     //Persona
-                    int ultimoID = Convert.ToInt32(txtID.Text);
                     String apellido = txtApellido.Text;
                     String direccion = txtDireccion.Text;
                     String nombre = txtNombre.Text;
@@ -117,15 +93,15 @@ namespace Inicio.FormularioPersona
                         telefono = telefono,
                         tipoPersona = tipoPersona,
                     };
-                    await personaServicios.AgregarPersonaAsync(nuevaPersona);
+                    var personaAdded = await PersonaServicios.Create(nuevaPersona);
                     //Crear nuevo Usuario
                     Usuario nuevoUsuario = new Usuario()
                     {
                         userName = usuario,
                         password = contraseña,
-                        idPersona = ultimoID,
+                        idPersona = personaAdded.Id,
                     };
-                    await usuarioServicios.AgregarUsuarioAsync(nuevoUsuario);
+                    await UsuarioServicios.Create(nuevoUsuario);
                     this.Close();
                 }
                 else

@@ -135,7 +135,7 @@
             Controls.Add(button2);
             Controls.Add(button1);
             Name = "EditarForm";
-            Text = "EditarForm";
+            Text = "Editar plan";
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ResumeLayout(false);

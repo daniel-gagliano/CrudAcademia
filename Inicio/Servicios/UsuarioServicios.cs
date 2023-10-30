@@ -1,61 +1,61 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Inicio.Servicios
 {
-    public class UsuarioServicios
+    public static class UsuarioServicios
     {
-        private AcademiaContext dbContext;
-
-        public UsuarioServicios(AcademiaContext context)
+        private static readonly string baseUrl = "https://localhost:7077/api/Usuario";
+        private static HttpClient httpClient = new HttpClient();
+        public static async Task<Usuario> GetOne(int id)
         {
-            dbContext = context;
-        }
-
-        public async Task<List<Usuario>> ObtenerTodosLosUsuariosAsync()
-        {
-            return await dbContext.Usuarios.ToListAsync();
-        }
-
-        public async Task<Usuario> ObtenerUsuarioPorIdAsync(int id)
-        {
-
-            return await dbContext.Usuarios.FirstOrDefaultAsync(p => p.idUsuario == id);
-        }
-
-        public async Task AgregarUsuarioAsync(Usuario usuario)
-        {
-            dbContext.Usuarios.Add(usuario);
-            await dbContext.SaveChangesAsync();
-        }
-        public async Task EditarUsuarioAsync(int id, Usuario usuarioActualizado)
-        {
-            var usuarioExistente = await dbContext.Usuarios.FirstOrDefaultAsync(p => p.idUsuario == id);
-            if (usuarioExistente != null)
+            var response = await httpClient.GetAsync($"{baseUrl}/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                usuarioExistente.idUsuario = usuarioActualizado.idUsuario;
-                usuarioExistente.idPersona = usuarioActualizado.idPersona;
-                usuarioExistente.password = usuarioActualizado.password;
-                usuarioExistente.userName = usuarioActualizado.userName;
-                await dbContext.SaveChangesAsync();
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var usuario = JsonConvert.DeserializeObject<Usuario>(responseContent);
+                return usuario;
             }
+            else return null;
         }
-
-        public async Task EliminarUsuarioAsync(int id)
+        public static async Task<List<Usuario>> Get()
         {
-            var usuarioAEliminar = await dbContext.Usuarios.FirstOrDefaultAsync(x => x.idUsuario == id);
-            if (usuarioAEliminar != null)
+            var response = await httpClient.GetAsync($"{baseUrl}");
+            if (response.IsSuccessStatusCode)
             {
-                dbContext.Usuarios.Remove(usuarioAEliminar);
-                await dbContext.SaveChangesAsync(true);
-
+                var content = await response.Content.ReadAsStringAsync();
+                var usuarios = JsonConvert.DeserializeObject<List<Usuario>>(content);
+                return usuarios;
             }
+            else return null;
+        }
+        public static async Task<Usuario> Create(Usuario usuario)
+        {
+            var usuarioJson = JsonConvert.SerializeObject(usuario);
+            var content = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var addedUsuario = JsonConvert.DeserializeObject<Usuario>(responseContent);
+                return addedUsuario;
+            }
+            else return null;
+        }
+        public static async Task<Boolean> Update(Usuario usuario)
+        {
+            var usuarioJson = JsonConvert.SerializeObject(usuario);
+            var content = new StringContent(usuarioJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PutAsync($"{baseUrl}/{usuario.idUsuario}", content);
+            return response.IsSuccessStatusCode;
+        }
+        public static async Task<Boolean> Delete(int id)
+        {
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
