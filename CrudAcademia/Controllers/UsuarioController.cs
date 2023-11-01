@@ -66,5 +66,13 @@ namespace CrudAcademia.Controllers
                 _AcademiaContext.SaveChanges();
             }
         }
+
+        [HttpPost("autenticar")]
+        public async Task<ActionResult<Usuario>> AutenticarUsuario([FromBody] Credenciales credenciales)
+        {
+            var usuario = await _AcademiaContext.Usuarios
+                .SingleOrDefaultAsync(x => x.userName == credenciales.userName && x.password == credenciales.password);
+            return usuario;
+        }
     }
 }

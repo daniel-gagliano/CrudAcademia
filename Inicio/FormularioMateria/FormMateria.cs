@@ -1,18 +1,6 @@
 ﻿using BibliotecaClases;
-using CrudAcademia.Context;
-using FormularioEspecialidad.Models;
 using Inicio.Servicios;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Inicio.FormularioMateria
 {
@@ -22,14 +10,11 @@ namespace Inicio.FormularioMateria
         public FormMateria()
         {
             InitializeComponent();
-            this.List();
-
         }
 
         private async void List()
         {
-            var materias = await MateriaServicios.Get();
-            dgvPersonas.DataSource = materias;
+            dgvPersonas.DataSource = await MateriaServicios.Get();
         }
 
         protected async Task<int> ObtenerUltimoId()
@@ -49,7 +34,7 @@ namespace Inicio.FormularioMateria
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            this.List();
         }
 
         private void button1_Click(object sender, EventArgs e)

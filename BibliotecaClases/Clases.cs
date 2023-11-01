@@ -112,4 +112,10 @@ namespace BibliotecaClases
         public int nota { get; set; }
     }
 
+    public class Credenciales
+    {
+        public String userName { get; set; }
+        public String password { get; set; }
+    }
+
 }

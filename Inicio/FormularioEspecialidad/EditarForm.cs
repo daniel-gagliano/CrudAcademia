@@ -1,14 +1,5 @@
 ﻿using BibliotecaClases;
 using Inicio.Servicios;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 
 
@@ -69,7 +60,7 @@ namespace Inicio.FormularioEspecialidad
             {
 
                 especialidadEditar.descEspecialidad = txtDescripcion.Text;
-                EspecialidadServicios.Update(especialidadEditar);
+                await EspecialidadServicios.Update(especialidadEditar);
                 this.Close();
 
             }

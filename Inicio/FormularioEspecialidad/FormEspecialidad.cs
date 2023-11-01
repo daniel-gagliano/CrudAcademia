@@ -1,15 +1,5 @@
 ﻿using BibliotecaClases;
 using Inicio.Servicios;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Inicio.FormularioEspecialidad
 {
@@ -21,7 +11,6 @@ namespace Inicio.FormularioEspecialidad
         {
             InitializeComponent();
             dgvEspecialidades.CurrentCell = null;
-            this.List();
         }
 
         private void FormEspecialidad_Load(object sender, EventArgs e)
@@ -77,7 +66,7 @@ namespace Inicio.FormularioEspecialidad
 
                 if (especialidad is not null)
                 {
-                    dgvEspecialidades.DataSource = especialidadList;
+                    dgvEspecialidades.DataSource = especialidad;
                 }
                 else
                 {

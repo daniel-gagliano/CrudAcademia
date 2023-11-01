@@ -1,12 +1,14 @@
 using Inicio.FormularioEspecialidad;
-using Inicio.FormularioPlan;
+using Inicio.FormularioMateria;
 using Inicio.FormularioPersona;
+using Inicio.FormularioPlan;
+using BibliotecaClases;
 
 namespace Inicio
 {
     public partial class Inicio : Form
     {
-        public Inicio()
+        public Inicio(Usuario usuario, Persona persona)
         {
             InitializeComponent();
         }
@@ -31,7 +33,18 @@ namespace Inicio
 
         private void button6_Click(object sender, EventArgs e)
         {
+            FormMateria materiasCrud = new FormMateria();
+            materiasCrud.ShowDialog();
+        }
 
+        private void button8_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

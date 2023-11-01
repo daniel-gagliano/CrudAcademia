@@ -1,50 +1,20 @@
 ﻿using BibliotecaClases;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using Inicio.Servicios;
 
 namespace Inicio.FormularioPlan
 {
     public partial class FormPlan : Form
     {
-        private List<Plan> planList = new List<Plan>();
-        private Plan nuevoPlan;
-        private readonly HttpClient _httpClient = new()
-        {
-            BaseAddress = new Uri("https://localhost:7077")
-        };
         public FormPlan()
         {
             InitializeComponent();
-            this.List();
         }
 
         protected async Task List()
         {
-            planList = (await _httpClient.GetFromJsonAsync<IEnumerable<Plan>>("api/Plan")).ToList();
-            this.dgvPlanes.DataSource = planList;
+            this.dgvPlanes.DataSource = await PlanServicios.Get();
         }
-        protected int ObtenerUltimoId()
-        {
-            if (planList.Any())
-            {
-                // Ordena la lista de personas por ID de manera descendente y toma el primer elemento
-                Plan ultimoPlan = planList.OrderByDescending(p => p.idPlan).First();
-                return ultimoPlan.idPlan;
-            }
-            else
-            {
-                // Si la lista está vacía, devuelve un valor inicial
-                return 0;
-            }
-        }
+
 
         private async void button1_Click(object sender, EventArgs e)
         {
@@ -60,60 +30,36 @@ namespace Inicio.FormularioPlan
         {
             BusquedaForm busqueda = new BusquedaForm();
             busqueda.ShowDialog();
-            String idRecibido = busqueda.id;
+            int idRecibido = int.Parse(busqueda.id);
 
-            if (!string.IsNullOrEmpty(idRecibido))
+            if (idRecibido != 0)
             {
-                var response = await _httpClient.GetAsync($"api/Plan/{idRecibido}");
+                var plan = await PlanServicios.GetOne(idRecibido);
 
-                if (response.IsSuccessStatusCode)
+                if (plan is not null)
                 {
-                    var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // Verifica si la respuesta es una cadena JSON válida.
-                    if (!string.IsNullOrEmpty(jsonResponse) && jsonResponse.StartsWith("{"))
-                    {
-                        var plan = await response.Content.ReadFromJsonAsync<Plan>();
-                        if (plan != null)
-                        {
-                            List<Plan> planList = new List<Plan> { plan };
-                            dgvPlanes.DataSource = planList;
-
-                        }
-
-                    }
-                    else
-                    {
-                        // La respuesta no es un JSON válido, muestra un MessageBox.
-                        MessageBox.Show("Plan no encontrado", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-
-
+                    dgvPlanes.DataSource = plan;
                 }
                 else
                 {
-                    // Maneja casos en los que la solicitud no fue exitosa (código de estado HTTP diferente de 200).
-                    MessageBox.Show("Ingresa un valor valido", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Plan no encontrado", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+
             }
         }
 
         private async void btAgregar_Click(object sender, EventArgs e)
         {
-            int ultimoId = ObtenerUltimoId();
-            AgregarForm agregar = new AgregarForm(ultimoId + 1);
+            
+            AgregarForm agregar = new AgregarForm();
             agregar.ShowDialog();
-            nuevoPlan = agregar.NuevoPlan;
-            HttpResponseMessage response = await _httpClient.PostAsJsonAsync("api/Plan", nuevoPlan);
             await this.List();
         }
 
         private async void btEditar_Click(object sender, EventArgs e)
         {
-            nuevoPlan = dgvPlanes.SelectedRows[0].DataBoundItem as Plan; ;
-            EditarForm editar = new EditarForm(nuevoPlan);
-            editar.ShowDialog();
-            HttpResponseMessage response = await _httpClient.PutAsJsonAsync($"api/Plan/{nuevoPlan.idPlan}", nuevoPlan);
-
+            var editPlan = dgvPlanes.SelectedRows[0].DataBoundItem as Plan; ;
+            EditarForm editar = new EditarForm(editPlan);
             await this.List();
         }
 
@@ -126,7 +72,7 @@ namespace Inicio.FormularioPlan
 
                 // El nombre de la columna que contiene el ID es "Id"
                 // Acceder al valor del ID de la fila seleccionada:
-                String id = selectedRow.Cells["idPlan"].Value.ToString();
+                int id = (int)selectedRow.Cells["idPlan"].Value;
 
                 // Mostrar un MessageBox de confirmación
                 DialogResult result = MessageBox.Show("Seguro que quieres eliminar este plan?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -135,7 +81,7 @@ namespace Inicio.FormularioPlan
                 {
                     // Ahora, la variable 'id' contiene el ID de la fila seleccionada.
 
-                    await _httpClient.DeleteAsync($"api/Plan/{id}");
+                    await PlanServicios.Delete(id);
                 }
 
 

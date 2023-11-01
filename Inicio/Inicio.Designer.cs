@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
+            lblTitle = new Label();
             btnPersonas = new Button();
             button1 = new Button();
             button2 = new Button();
@@ -40,20 +40,21 @@
             groupBox3 = new GroupBox();
             button5 = new Button();
             button3 = new Button();
+            button8 = new Button();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             groupBox3.SuspendLayout();
             SuspendLayout();
             // 
-            // label1
+            // lblTitle
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Berlin Sans FB Demi", 18F, FontStyle.Bold, GraphicsUnit.Point);
-            label1.Location = new Point(282, 12);
-            label1.Name = "label1";
-            label1.Size = new Size(136, 27);
-            label1.TabIndex = 0;
-            label1.Text = "Bienvenido";
+            lblTitle.Font = new Font("Bahnschrift", 20.25F, FontStyle.Bold, GraphicsUnit.Point);
+            lblTitle.Location = new Point(12, 12);
+            lblTitle.Name = "lblTitle";
+            lblTitle.Size = new Size(703, 57);
+            lblTitle.TabIndex = 0;
+            lblTitle.Text = "Menú principal";
+            lblTitle.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // btnPersonas
             // 
@@ -93,7 +94,7 @@
             groupBox1.Controls.Add(button1);
             groupBox1.Location = new Point(34, 100);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(201, 292);
+            groupBox1.Size = new Size(201, 284);
             groupBox1.TabIndex = 4;
             groupBox1.TabStop = false;
             groupBox1.Text = "ADMINISTRADOR";
@@ -158,23 +159,36 @@
             // 
             // button3
             // 
-            button3.Location = new Point(307, 415);
+            button3.Location = new Point(263, 407);
             button3.Name = "button3";
             button3.Size = new Size(96, 23);
             button3.TabIndex = 7;
-            button3.Text = "Cerrar Sesion";
+            button3.Text = "Cerrar Sesión";
             button3.UseVisualStyleBackColor = true;
+            button3.Click += button3_Click;
+            // 
+            // button8
+            // 
+            button8.DialogResult = DialogResult.Abort;
+            button8.Location = new Point(367, 407);
+            button8.Name = "button8";
+            button8.Size = new Size(96, 23);
+            button8.TabIndex = 8;
+            button8.Text = "Salir";
+            button8.UseVisualStyleBackColor = true;
+            button8.Click += button8_Click;
             // 
             // Inicio
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(727, 457);
+            Controls.Add(button8);
             Controls.Add(button3);
             Controls.Add(groupBox3);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
-            Controls.Add(label1);
+            Controls.Add(lblTitle);
             Name = "Inicio";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "ACADEMIA";
@@ -182,12 +196,11 @@
             groupBox2.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
+        private Label lblTitle;
         private Button btnPersonas;
         private Button button1;
         private Button button2;
@@ -199,5 +212,6 @@
         private Button button3;
         private Button button6;
         private Button button7;
+        private Button button8;
     }
 }

@@ -57,5 +57,20 @@ namespace Inicio.Servicios
             var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
             return response.IsSuccessStatusCode;
         }
+
+        public static async Task<Usuario> Login(Credenciales credenciales)
+        {
+            var credencialesJson = JsonConvert.SerializeObject(credenciales);
+            var content = new StringContent(credencialesJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}/autenticar", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var usuario = JsonConvert.DeserializeObject<Usuario>(responseContent);
+                return usuario;
+            }
+            else return null;
+        }
     }
 }
