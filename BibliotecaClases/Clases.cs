@@ -18,28 +18,22 @@ namespace BibliotecaClases
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [ReadOnly(true)]
-        public int Id { get; set; }
+        public int legajo { get; set; }
         public String apellido { get; set; }
         public String direccion { get; set; }
         public String nombre { get; set; }
         public String email { get; set; }
         public DateTime? fechaNacimiento { get; set; }
         public int IdPlan { get; set; }
-        public int legajo { get; set; }
+        [Index(IsUnique = true)]
         public String telefono { get; set; }
         public String tipoPersona { get; set; }
-    }
-
-    public class Usuario
-    {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [ReadOnly(true)]
-        public int idUsuario { get; set; }
+        [Index(IsUnique = true)]
         public String userName { get; set; }
         public String password { get; set; }
-        public int idPersona { get; set; }
-
+        public bool esAdmin { get; set; } = false;
+        public bool esAlumno { get; set; } = false;
+        public bool esDocente { get; set; } = false;
     }
     public class Plan
     {
@@ -116,6 +110,7 @@ namespace BibliotecaClases
     {
         public String userName { get; set; }
         public String password { get; set; }
+        public String loguearComo { get; set; }
     }
 
 }

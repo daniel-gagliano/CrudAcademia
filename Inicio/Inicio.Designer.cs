@@ -62,7 +62,7 @@
             btnPersonas.Name = "btnPersonas";
             btnPersonas.Size = new Size(189, 44);
             btnPersonas.TabIndex = 1;
-            btnPersonas.Text = "EDITAR USUARIOS";
+            btnPersonas.Text = "USUARIOS";
             btnPersonas.UseVisualStyleBackColor = true;
             btnPersonas.Click += btnPersonas_Click;
             // 
@@ -72,7 +72,7 @@
             button1.Name = "button1";
             button1.Size = new Size(189, 48);
             button1.TabIndex = 2;
-            button1.Text = "EDITAR PLANES";
+            button1.Text = "PLANES";
             button1.UseVisualStyleBackColor = true;
             button1.Click += button1_Click;
             // 
@@ -82,7 +82,7 @@
             button2.Name = "button2";
             button2.Size = new Size(189, 47);
             button2.TabIndex = 3;
-            button2.Text = "EDITAR ESPECIALIDADES";
+            button2.Text = "ESPECIALIDADES";
             button2.UseVisualStyleBackColor = true;
             button2.Click += button2_Click;
             // 
@@ -105,7 +105,7 @@
             button6.Name = "button6";
             button6.Size = new Size(189, 42);
             button6.TabIndex = 4;
-            button6.Text = "EDITAR MATERIAS";
+            button6.Text = "MATERIAS";
             button6.UseVisualStyleBackColor = true;
             button6.Click += button6_Click;
             // 
@@ -182,6 +182,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = button8;
             ClientSize = new Size(727, 457);
             Controls.Add(button8);
             Controls.Add(button3);
@@ -189,9 +190,11 @@
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(lblTitle);
+            FormBorderStyle = FormBorderStyle.None;
             Name = "Inicio";
-            StartPosition = FormStartPosition.CenterScreen;
+            StartPosition = FormStartPosition.CenterParent;
             Text = "ACADEMIA";
+            FormClosed += Inicio_FormClosed;
             groupBox1.ResumeLayout(false);
             groupBox2.ResumeLayout(false);
             groupBox3.ResumeLayout(false);

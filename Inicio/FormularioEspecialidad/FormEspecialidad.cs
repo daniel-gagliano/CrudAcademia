@@ -34,7 +34,7 @@ namespace Inicio.FormularioEspecialidad
                 // Obtener la fila seleccionada
                 DataGridViewRow selectedRow = dgvEspecialidades.SelectedRows[0];
 
-                // El nombre de la columna que contiene el ID es "Id"
+                // El nombre de la columna que contiene el ID es "idAlumno"
                 // Acceder al valor del ID de la fila seleccionada:
                 int id = (int)selectedRow.Cells["idEspecialidad"].Value;
 

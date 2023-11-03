@@ -3,12 +3,13 @@ using Inicio.FormularioMateria;
 using Inicio.FormularioPersona;
 using Inicio.FormularioPlan;
 using BibliotecaClases;
+using System.Windows.Forms;
 
 namespace Inicio
 {
     public partial class Inicio : Form
     {
-        public Inicio(Usuario usuario, Persona persona)
+        public Inicio()
         {
             InitializeComponent();
         }
@@ -39,12 +40,29 @@ namespace Inicio
 
         private void button8_Click(object sender, EventArgs e)
         {
-            this.Close();
+            Application.Exit();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
+            this.DialogResult = DialogResult.Retry;
             this.Close();
+        }
+
+        private void Inicio_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (this.DialogResult == DialogResult.Retry)
+            {
+                var login = new Login();
+                login.MdiParent = this.MdiParent;
+                login.StartPosition = FormStartPosition.Manual;
+                login.Location = new Point(
+                    MdiParent.Location.X + (MdiParent.Width - login.Width) / 2,
+                    MdiParent.Location.Y + (MdiParent.Height - login.Height) / 2
+                );
+                this.Dispose();
+                login.Show();
+            }
         }
     }
 }

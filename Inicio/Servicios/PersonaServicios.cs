@@ -49,13 +49,35 @@ namespace Inicio.Servicios
         {
             var personaJson = JsonConvert.SerializeObject(persona);
             var content = new StringContent(personaJson, Encoding.UTF8, "application/json");
-            var response = await httpClient.PutAsync($"{baseUrl}/{persona.Id}", content);
+            var response = await httpClient.PutAsync($"{baseUrl}/{persona.legajo}", content);
             return response.IsSuccessStatusCode;
         }
-        public static async Task<Boolean> Delete(int id)
+        public static async Task<Boolean> Delete(int legajo)
         {
-            var response = await httpClient.DeleteAsync($"{baseUrl}/{id}");
+            var response = await httpClient.DeleteAsync($"{baseUrl}/{legajo}");
             return response.IsSuccessStatusCode;
+        }
+
+        public static async Task<Persona> Login(Credenciales credenciales)
+        {
+            var credencialesJson = JsonConvert.SerializeObject(credenciales);
+            var content = new StringContent(credencialesJson, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}/autenticar", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseContent = await response.Content.ReadAsStringAsync();
+                var persona = JsonConvert.DeserializeObject<Persona>(responseContent);
+                return persona;
+            }
+            else return null;
+        }
+
+        public static async Task<bool> UsuarioDisponible(string nombreUsuario)
+        {
+            var content = new StringContent(nombreUsuario, Encoding.UTF8, "application/json");
+            var response = await httpClient.PostAsync($"{baseUrl}/autenticar", content);
+            return (response.IsSuccessStatusCode);
         }
     }
 }

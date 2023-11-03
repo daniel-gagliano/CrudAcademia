@@ -1,70 +1,176 @@
-﻿using BibliotecaClases;
-using CrudAcademia.Context;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using BibliotecaClases;
+using CrudAcademia.Context;
 
 namespace CrudAcademia.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-
+    [ApiController]
     public class PersonaController : ControllerBase
     {
-        private readonly AcademiaContext _AcademiaContext;
+        private readonly AcademiaContext _context;
+        const string administrador = "Administrador";
+        const string docente = "Docente";
+        const string alumno = "Alumno";
 
-        public PersonaController(AcademiaContext AcademiaContext)
+        public PersonaController(AcademiaContext context)
         {
-            _AcademiaContext = AcademiaContext;
+            _context = context;
         }
 
-        // GET: api/<PersonaController>
+        // GET: api/Persona
         [HttpGet]
-        public async Task<IEnumerable<Persona>> GetAsync()
+        public async Task<ActionResult<IEnumerable<Persona>>> GetPersona(string? rol="")
         {
-            return await Task.FromResult(_AcademiaContext.Persona);
+          if (_context.Persona == null)
+          {
+              return NotFound();
+          }
+            if (!string.IsNullOrEmpty(rol))
+            {
+                switch (rol)
+                {
+                    case administrador:
+                        return await _context.Persona.Where(u => u.esAdmin).ToListAsync();
+                    case docente:
+                        return await _context.Persona.Where(u => u.esDocente).ToListAsync();
+                    case alumno:
+                        return await _context.Persona.Where(u => u.esAlumno).ToListAsync();
+                    default:
+                        return BadRequest();
+                }
+            }
+            else return await _context.Persona.ToListAsync();
         }
 
-        // GET api/<PersonaController>/5
+        // GET: api/Persona/5
         [HttpGet("{id}")]
-        public async Task<Persona> Get(int id)
+        public async Task<ActionResult<Persona>> GetPersona(int id)
         {
-            return await _AcademiaContext.Persona.SingleOrDefaultAsync(x => x.Id == id);
+          if (_context.Persona == null)
+          {
+              return NotFound();
+          }
+            var persona = await _context.Persona.FindAsync(id);
+
+            if (persona == null)
+            {
+                return NotFound();
+            }
+
+            return persona;
         }
 
-        // POST api/<PersonaController>
-        [HttpPost]
-        public void Post([FromBody] Persona persona)
-        {
-        _AcademiaContext.Persona.Add(persona);
-        _AcademiaContext.SaveChanges();
-        }
-
-        // PUT api/<PersonaController>/5
+        // PUT: api/Persona/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] Persona persona)
+        public async Task<IActionResult> PutPersona(int id, Persona persona)
         {
-            var item = _AcademiaContext.Persona.FirstOrDefault(x=> x.Id==id);
-            if(item != null)
+            if (id != persona.legajo)
             {
-                _AcademiaContext.Entry(item).State = EntityState.Detached;
-                _AcademiaContext.Persona.Update(persona);
-                _AcademiaContext.SaveChanges();
+                return BadRequest();
             }
-            
+
+            _context.Entry(persona).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PersonaExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // DELETE api/<PersonaController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // POST: api/Persona
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<Persona>> PostPersona(Persona persona)
         {
-            var item = _AcademiaContext.Persona.FirstOrDefault(x=>x.Id==id);
-            if (item!=null)
+          if (_context.Persona == null)
+          {
+              return Problem("Entity set 'AcademiaContext.Persona'  is null.");
+          }
+            _context.Persona.Add(persona);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPersona", new { id = persona.legajo }, persona);
+        }
+
+        // DELETE: api/Persona/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePersona(int legajo)
+        {
+            var persona = await _context.Persona.FindAsync(legajo);
+            if (persona == null)
             {
-                _AcademiaContext.Persona.Remove(item);
-                _AcademiaContext.SaveChanges();
+                return NotFound();
+            }
+
+            _context.Persona.Remove(persona);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        private bool PersonaExists(int id)
+        {
+            return (_context.Persona?.Any(e => e.legajo == id)).GetValueOrDefault();
+        }
+
+        [HttpPost("autenticar")]
+        public async Task<ActionResult<Persona>> AutenticarUsuario([FromBody] Credenciales credenciales)
+        {
+            Persona persona;
+            switch (credenciales.loguearComo)
+            {
+                case administrador:
+                    persona = await _context.Persona
+                        .SingleOrDefaultAsync(x => x.userName == credenciales.userName && x.password == credenciales.password && x.esAdmin);
+                    break;
+                case docente:
+                    persona = await _context.Persona
+                        .SingleOrDefaultAsync(x => x.userName == credenciales.userName && x.password == credenciales.password && x.esDocente);
+                    break;
+                case alumno:
+                    persona = await _context.Persona
+                        .SingleOrDefaultAsync(x => x.userName == credenciales.userName && x.password == credenciales.password && x.esAlumno);
+                    break;
+                default:
+                    persona = null;
+                    break;
+            }
+            return persona;
+        }
+
+        [HttpPost("usuariodisponible")]
+        public async Task<IActionResult> ValidarUsuarioDisponible([FromBody] string nombreUsuario)
+        {
+            var persona = await _context.Persona.SingleOrDefaultAsync(x => x.userName == nombreUsuario);
+            if (persona is null)
+            {
+                return Ok(true); // El nombre de usuario está disponible.
+            }
+            else
+            {
+                return Conflict("El nombre de usuario no está disponible."); // El nombre de usuario no está disponible.
             }
         }
+
     }
 }

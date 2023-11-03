@@ -37,6 +37,8 @@
             chkShowPw = new CheckBox();
             pictureBox3 = new PictureBox();
             lblError = new Label();
+            cmbLoginAs = new ComboBox();
+            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -55,7 +57,8 @@
             // txtUsuario
             // 
             txtUsuario.Cursor = Cursors.IBeam;
-            txtUsuario.Location = new Point(237, 199);
+            txtUsuario.Location = new Point(233, 254);
+            txtUsuario.MaxLength = 20;
             txtUsuario.Name = "txtUsuario";
             txtUsuario.PlaceholderText = "Usuario";
             txtUsuario.Size = new Size(167, 23);
@@ -67,7 +70,7 @@
             // 
             pictureBox1.BackgroundImage = Properties.Resources.round_account_button_with_user_inside_icon_icons_com_72596;
             pictureBox1.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox1.Location = new Point(208, 199);
+            pictureBox1.Location = new Point(204, 254);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(23, 23);
             pictureBox1.TabIndex = 2;
@@ -76,7 +79,8 @@
             // txtPassword
             // 
             txtPassword.Cursor = Cursors.IBeam;
-            txtPassword.Location = new Point(237, 243);
+            txtPassword.Location = new Point(233, 298);
+            txtPassword.MaxLength = 20;
             txtPassword.Name = "txtPassword";
             txtPassword.PlaceholderText = "Contraseña";
             txtPassword.Size = new Size(167, 23);
@@ -89,7 +93,7 @@
             // 
             pictureBox2.BackgroundImage = Properties.Resources.password_3715;
             pictureBox2.BackgroundImageLayout = ImageLayout.Zoom;
-            pictureBox2.Location = new Point(208, 243);
+            pictureBox2.Location = new Point(204, 298);
             pictureBox2.Name = "pictureBox2";
             pictureBox2.Size = new Size(23, 23);
             pictureBox2.TabIndex = 4;
@@ -97,7 +101,7 @@
             // 
             // btnOK
             // 
-            btnOK.Location = new Point(208, 307);
+            btnOK.Location = new Point(204, 362);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(196, 23);
             btnOK.TabIndex = 5;
@@ -108,7 +112,7 @@
             // chkShowPw
             // 
             chkShowPw.AutoSize = true;
-            chkShowPw.Location = new Point(410, 245);
+            chkShowPw.Location = new Point(406, 300);
             chkShowPw.Name = "chkShowPw";
             chkShowPw.Size = new Size(67, 19);
             chkShowPw.TabIndex = 6;
@@ -129,19 +133,40 @@
             // lblError
             // 
             lblError.ForeColor = Color.IndianRed;
-            lblError.Location = new Point(156, 278);
+            lblError.Location = new Point(12, 333);
             lblError.Name = "lblError";
-            lblError.Size = new Size(344, 23);
+            lblError.Size = new Size(591, 23);
             lblError.TabIndex = 8;
             lblError.Text = "Usuario y/o contraseña incorrectos. Intente nuevamente.";
             lblError.TextAlign = ContentAlignment.MiddleCenter;
             lblError.Visible = false;
             // 
+            // cmbLoginAs
+            // 
+            cmbLoginAs.FormattingEnabled = true;
+            cmbLoginAs.Items.AddRange(new object[] { "Alumno", "Docente", "Administrador" });
+            cmbLoginAs.Location = new Point(269, 197);
+            cmbLoginAs.Name = "cmbLoginAs";
+            cmbLoginAs.Size = new Size(167, 23);
+            cmbLoginAs.TabIndex = 9;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Bahnschrift SemiLight", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(170, 200);
+            label1.Name = "label1";
+            label1.Size = new Size(95, 16);
+            label1.TabIndex = 10;
+            label1.Text = "Ingresar como:";
+            // 
             // Login
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(615, 351);
+            ClientSize = new Size(615, 426);
+            Controls.Add(label1);
+            Controls.Add(cmbLoginAs);
             Controls.Add(lblError);
             Controls.Add(pictureBox3);
             Controls.Add(chkShowPw);
@@ -151,8 +176,11 @@
             Controls.Add(pictureBox1);
             Controls.Add(txtUsuario);
             Controls.Add(lblTitle);
+            FormBorderStyle = FormBorderStyle.None;
             Name = "Login";
+            StartPosition = FormStartPosition.CenterParent;
             Text = "Login";
+            FormClosed += Login_FormClosed;
             Load += Login_Load;
             ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).EndInit();
@@ -172,5 +200,7 @@
         private CheckBox chkShowPw;
         private PictureBox pictureBox3;
         private Label lblError;
+        private ComboBox cmbLoginAs;
+        private Label label1;
     }
 }

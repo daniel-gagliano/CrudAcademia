@@ -1,5 +1,6 @@
 ﻿using BibliotecaClases;
 using Inicio.Servicios;
+using System.Windows.Forms;
 
 namespace Inicio.FormularioPersona
 {
@@ -8,14 +9,22 @@ namespace Inicio.FormularioPersona
         public FormPersona()
         {
             InitializeComponent();
-
-
             this.List();
-            
+
         }
         private async void List()
         {
             dgvPersonas.DataSource = await PersonaServicios.Get();
+            if (dgvPersonas.Rows.Count == 0)
+            {
+                btEliminar.Enabled = false;
+                btEditar.Enabled = false;
+            }
+            else
+            {
+                btEliminar.Enabled = true;
+                btEditar.Enabled = true;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -23,36 +32,9 @@ namespace Inicio.FormularioPersona
             this.Close();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-             this.List();
-        }
-
-        private async void btConsultar_Click(object sender, EventArgs e)
-        {
-            BusquedaForm busqueda = new BusquedaForm();
-            busqueda.ShowDialog();
-            int idRecibido = int.Parse(busqueda.id);
-
-            if (idRecibido != 0)
-            {
-                var persona = await PersonaServicios.GetOne(idRecibido);
-
-                if (persona is not null)
-                {
-                    dgvPersonas.DataSource = persona;
-                }
-                else
-                {
-                    MessageBox.Show("Persona no encontrada", "Busqueda", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-
-            }
-        }
-
         private void btAgregar_Click(object sender, EventArgs e)
         {
-            AgregarForm agregar = new AgregarForm();
+            AgregarEditarPersona agregar = new AgregarEditarPersona();
             agregar.ShowDialog();
             this.List();
         }
@@ -60,8 +42,9 @@ namespace Inicio.FormularioPersona
         private void btEditar_Click(object sender, EventArgs e)
         {
             var editPersona = dgvPersonas.SelectedRows[0].DataBoundItem as Persona;
-            EditarForm editar = new EditarForm(editPersona);
-            editar.ShowDialog();    
+            AgregarEditarPersona agregar = new AgregarEditarPersona(editPersona);
+            agregar.ShowDialog();
+            this.List();
 
             this.List();
         }
@@ -69,13 +52,13 @@ namespace Inicio.FormularioPersona
         private async void btEliminar_Click(object sender, EventArgs e)
         {
             if (dgvPersonas.SelectedRows.Count > 0)
-            {                
-                int personaId = (int)dgvPersonas.SelectedRows[0].Cells[0].Value;                
+            {
+                int personaId = (int)dgvPersonas.SelectedRows[0].Cells[0].Value;
                 DialogResult result = MessageBox.Show("Seguro que quieres eliminar esta persona?", "Confirmación", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 if (result == DialogResult.Yes)
-                {                
-                 await PersonaServicios.Delete(personaId);
+                {
+                    await PersonaServicios.Delete(personaId);
                 }
 
             }
